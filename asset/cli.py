@@ -4,21 +4,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import sys
 import json
 import click
-import logging
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from asset.commands import FetchTencent, FetchAliyun
 from asset.schema import TencentProfile, AliyunProfile, DbConfig
-from asset.conf import PLATFORMS
-
-
-def __setup_logs(output_dir, platforms):
-    dir_path = os.path.join(output_dir, platforms)
-    if not os.path.exists(dir_path):
-        os.mkdir(dir_path)
-    aliyun_handle = logging.FileHandler(os.path.join(dir_path, 'fetch.log'))
-    logging.basicConfig()
 
 
 @click.group()

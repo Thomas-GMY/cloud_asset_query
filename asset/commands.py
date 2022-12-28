@@ -33,8 +33,8 @@ _default_output_dir = './'
 
 
 class Fetch:
-
     _platform = ''
+    logger = None
 
     def __init__(
             self,
@@ -47,7 +47,6 @@ class Fetch:
         self.profile = profile
         self.dbconfig = dbconfig
         self.output_dir = output_dir
-        self.logger = logging.getLogger('cloud-asset-fetch')
 
         self._setup_logger()
         self._init_dbconfig()
@@ -56,14 +55,27 @@ class Fetch:
         raise NotImplementedError('')
 
     def _setup_logger(self):
-        self.logger.setLevel(logging.INFO)
-        self.logger.addHandler(self._get_log_handle())
-
-    def _get_log_handle(self):
-        dir_path = os.path.join(self.output_dir, self._platform)
+        dir_path = os.path.join(self.output_dir, 'fetch')
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
         handler = logging.FileHandler(os.path.join(dir_path, 'fetch.log'))
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s:%(levelname)s:%(message)s"))
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+
+        self.logger.addHandler(handler)
+        self.logger.addHandler(console_handler)
+        self.logger.setLevel(logging.INFO)
+
+    def _get_log_handle(self):
+        dir_path = os.path.join(self.output_dir, 'fetch')
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+        handler = logging.FileHandler(os.path.join(dir_path, 'fetch.log'))
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s:%(levelname)s:%(message)s"))
         return handler
 
     def _init_dbconfig(self):
@@ -87,6 +99,7 @@ class Fetch:
 
 class FetchTencent(Fetch):
     _platform = 'tencent'
+    logger = logging.getLogger(f'{_platform}-cloud-asset-fetch')
 
     def __init__(
             self,
@@ -115,7 +128,7 @@ class FetchTencent(Fetch):
                         self._ak, self._sk, role.arn, role.session_name, role.duration_seconds)
                     for region in role.regions:
 
-                        log_info = f'{name}-{role}-{region}'
+                        log_info = f'asset: {name}---region: {region}---role: {role.arn}'
                         try:
                             self.logger.info(f'{log_info}-fetch start')
                             asset(cred, region=region, dbconfig=self.dbconfig).fetch()
@@ -135,6 +148,7 @@ class FetchTencent(Fetch):
 
 class FetchAliyun(Fetch):
     _platform = 'aliyun'
+    logger = logging.getLogger(f'{_platform}-cloud-asset-fetch')
 
     def __init__(
             self,
@@ -154,7 +168,6 @@ class FetchAliyun(Fetch):
         self._roles = profile.roles
         self.dbconfig = dbconfig
 
-
     def fetch(self):
         with FetchCtx(self):
             for name, asset in self.assets.items():
@@ -162,7 +175,7 @@ class FetchAliyun(Fetch):
                     cred = RamRoleArnCredential(self._ak, self._sk, role.arn, role.session_name)
 
                     for region in role.regions:
-                        log_info = f'{name}-{role}-{region}'
+                        log_info = f'asset: {name}---region: {region}---role: {role.arn}'
                         try:
                             self.logger.info(f'{log_info}-fetch start')
                             asset(cred, region=region, dbconfig=self.dbconfig).fetch()
