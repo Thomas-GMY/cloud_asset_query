@@ -116,8 +116,9 @@ class Asset(metaclass=abc.ABCMeta):
     ):
         self.cred = cred
         self.region = region
+        self.dbconfig = dbconfig
         self._engine = create_engine(
-            "postgresql://{user}:{password}@{host}:{port}/{database}".format(**dbconfig.dict())
+            "postgresql://{user}:{password}@{host}:{port}/{database}".format(**self.dbconfig.dict())
         )
         if not self._table_name.startswith(f'{self._platform}_'):
             self._table_name = f'{self._platform}_{self._table_name}'
