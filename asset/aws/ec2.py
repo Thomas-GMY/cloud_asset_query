@@ -17,7 +17,7 @@ asset_columns = [
     {'name': 'LaunchTime', 'type': 'date'},
     {'name': 'Monitoring', 'type': 'dict'},
     {'name': 'Placement', 'type': 'dict'},
-    {'name': 'Platform', 'type': 'str', 'len': 16},
+    {'name': 'PlatformDetails', 'type': 'str', 'len': 16},
     {'name': 'PrivateDnsName', 'type': 'str', 'len': 128},
     {'name': 'PrivateIpAddress', 'type': 'str', 'len': 32},
     {'name': 'ProductCodes', 'type': 'dict'},
@@ -57,9 +57,10 @@ asset_columns = [
 class Ec2(AwsAsset):
     _asset_name = 'ec2'
     _des_request = 'describe_instances'
-    _response_field = 'Instances'
+    _response_field = 'Reservations'
+    _child_response_filed = 'Instances'
 
     _table_name = 'aws_ec2'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in asset_columns]
-    _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='aws_instance'),)
+    _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='aws_uc_ec2'),)
     _field_document = field_document

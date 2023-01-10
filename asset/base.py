@@ -16,7 +16,7 @@ from boto3 import Session
 from asset.asset_table import AssetTable
 from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential
 from asset.utils import to_hump_underline, get_tencent_account_id, get_aliyun_account_id, get_aws_account_id, \
-    tencent_parser_response, aliyun_parser_response, aws_parser_response
+    tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list
 
 
 class Describe:
@@ -78,6 +78,7 @@ class DescribeAws(Describe):
             client,
             des_request: str,
             response_field: str,
+            child_response_filed: str = None,
             des_request_kwargs: dict = None,
             parser_response_func: callable = aws_parser_response
     ):
@@ -85,10 +86,11 @@ class DescribeAws(Describe):
         self.des_request = des_request
         self.des_request_kwargs = dict() if des_request_kwargs is None else des_request_kwargs
         self.response_field = response_field
+        self.child_response_filed = child_response_filed
         self.parser_response_func = parser_response_func
 
     def parser_response(self):
-        return self.parser_response_func(self.describe(), self.response_field)
+        return self.parser_response_func(self.describe(), self.response_field, self.child_response_filed)
 
     def describe(self):
         return getattr(self.client, self.des_request)(**self.des_request_kwargs)
@@ -178,6 +180,8 @@ class Asset(metaclass=abc.ABCMeta):
         else:
             paginate_all_assets = self.paginate_all_assets
 
+        # all_assets datetime to str
+        paginate_all_assets = recursive_list(paginate_all_assets)
         if paginate_all_assets:
             uc = [_ for _ in self._table_args if isinstance(_, UniqueConstraint)]
             if uc:
@@ -192,11 +196,14 @@ class Asset(metaclass=abc.ABCMeta):
         for asset in assets:
             _ = copy.deepcopy(asset)
             _asset = {}
-            for key in _.keys():
-                hump_underline_key = to_hump_underline(key)
-                if hump_underline_key not in asset_columns:
-                    continue
-                _asset[hump_underline_key] = asset.pop(key)
+            _asset_keys = {to_hump_underline(key): key for key in _.keys()}
+            for asset_column in asset_columns:
+                if asset_column not in _asset_keys:
+                    if asset_column in ('account_id', 'record_date'):
+                        continue
+                    _asset.update({asset_column: None})
+                else:
+                    _asset[asset_column] = asset.pop(_asset_keys[asset_column])
             _assets.append(_asset)
 
         return _assets
@@ -317,7 +324,10 @@ class AwsAsset(Asset):
     _asset_name: str = ''
     _des_request: str = ''
     _response_field: str = ''
+    _child_response_filed: str = None
     _des_request_kwargs: dict = {'MaxResults': 50}
+
+    _describe = DescribeAws
 
     def __init__(
             self,
@@ -327,7 +337,7 @@ class AwsAsset(Asset):
             parser_response: callable = aws_parser_response
     ):
         super(AwsAsset, self).__init__(cred, region=region, dbconfig=dbconfig, parser_response=parser_response)
-        self.asset_describe = DescribeAws(
+        self.asset_describe = self._describe(
             self.client,
             self._des_request,
             self._response_field,
@@ -336,14 +346,29 @@ class AwsAsset(Asset):
         )
 
     def _paginate_all_assets(self) -> list:
-        pass
+        assets = []
+        while True:
+            _assets, next_token = self._describe(
+                self.client,
+                self._des_request,
+                self._response_field,
+                self._child_response_filed,
+                des_request_kwargs=self._des_request_kwargs,
+                parser_response_func=self.parser_response
+            ).parser_response()
+            assets += _assets
+            if next_token is None:
+                break
+            self._des_request_kwargs.update({'NextToken': next_token})
+        return assets
 
     def _get_client(self):
         """由子类实现"""
         return Session(**self.cred.dict()).client(self._asset_name, region_name=self.region)
 
     def _get_assets(self) -> list:
-        return self.asset_describe.parser_response()
+        assets, _ = self.asset_describe.parser_response()
+        return assets
 
     def _get_account_id(self):
         return get_aws_account_id(self.cred)
