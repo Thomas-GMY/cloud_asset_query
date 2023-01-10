@@ -6,6 +6,7 @@ import re
 import json
 import datetime
 
+import boto3
 from tencentcloud.cam.v20190116 import cam_client, models
 
 from aliyunsdksts.request.v20150401 import GetCallerIdentityRequest
@@ -94,12 +95,15 @@ def get_aws_account_id(cred: AwsCredential):
     return response['Account']
 
 
-def aws_assume_role(ak, sk, arn, role_session_name='fetch_asset', duration_seconds=3600) -> AwsCredential:
-    response = aws_client('sts', aws_access_key_id=ak, aws_secret_access_key=sk).assume_role(
+def aws_assume_role(
+        arn, region='cn-northwest-1', role_session_name='fetch_asset', duration_seconds=3600) -> AwsCredential:
+    response = boto3.client('sts').assume_role(
         RoleArn=arn, RoleSessionName=role_session_name, DurationSeconds=duration_seconds
     )
     role_ak = response['Credentials'].get('AccessKeyId')
     role_sk = response['Credentials'].get('SecretAccessKey')
     role_token = response['Credentials']['SessionToken']
     return AwsCredential(aws_access_key_id=role_ak, aws_secret_access_key=role_sk, aws_session_token=role_token)
+
+
 

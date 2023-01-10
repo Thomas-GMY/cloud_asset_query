@@ -58,7 +58,7 @@ class Ec2CpuUtilization(AwsAsset):
             if not _instances:
                 continue
             _instances = [{'Name': 'InstanceId', 'Value': instance['InstanceId']} for instance in _instances]
-            self._des_request_kwargs['MetricDataQueries'][0]['MetricStat']['Metric']['Dimensions'] = _instances[0: 1]
+            self._des_request_kwargs['MetricDataQueries'][0]['MetricStat']['Metric']['Dimensions'] = [{'Name': 'InstanceId', 'Value': 'i-0bf03669fc5c6da52'}]
             _assets, _ = self._describe(
                 self.client,
                 self._des_request,
