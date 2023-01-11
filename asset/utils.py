@@ -2,6 +2,7 @@
 
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
+
 import re
 import json
 import datetime
@@ -95,8 +96,7 @@ def get_aws_account_id(cred: AwsCredential):
     return response['Account']
 
 
-def aws_assume_role(
-        arn, region='cn-northwest-1', role_session_name='fetch_asset', duration_seconds=3600) -> AwsCredential:
+def aws_assume_role(arn, role_session_name='fetch_asset', duration_seconds=3600) -> AwsCredential:
     response = boto3.client('sts').assume_role(
         RoleArn=arn, RoleSessionName=role_session_name, DurationSeconds=duration_seconds
     )

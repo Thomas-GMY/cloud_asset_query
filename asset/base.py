@@ -188,6 +188,7 @@ class Asset(metaclass=abc.ABCMeta):
                 AssetTable.insert_values_duplicat_do_nothing(self.table, paginate_all_assets, self.engine, uc[0].name)
             else:
                 AssetTable.insert_values(self.table, paginate_all_assets, self.engine)
+        return True
 
     @classmethod
     def assets_to_hump_underline(cls, assets: List[dict], asset_columns: List[AssetColumn]) -> List[dict]:
