@@ -8,9 +8,7 @@ from asset.aws.cloudwatch import Ec2CpuUtilization
 
 
 class TestEc2CpuUtilization(BaseAwsTest):
-    _asset = Ec2CpuUtilization
 
-    def test_account_id(self):
-        assert 1==1
-
+    def load_asset(self):
+        return Ec2CpuUtilization(self.cred, self.region, dbconfig=self.db_config)
 

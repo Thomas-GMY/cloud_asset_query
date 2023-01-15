@@ -4,14 +4,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import copy
-import arrow
 import datetime
-from asset.asset_register import aws_asset_register
 from asset.base import AwsAsset, AssetColumn, UniqueConstraint
-
-today = arrow.now().datetime
-yesterday = arrow.now().shift(days=-1).datetime
-
+from asset.asset_register import aws_asset_register
+from asset.conf import today, yesterday
 
 ecu_asset_columns = [
     {'name': 'InstanceId', 'type': 'str', 'len': 64},
@@ -62,8 +58,8 @@ class Ec2CpuUtilization(AwsAsset):
     _response_field = 'MetricDataResults'
     _des_request_kwargs: dict = {
         'MetricDataQueries': [],
-        'StartTime': datetime.datetime(today.year, today.month, today.day),
-        'EndTime': datetime.datetime(yesterday.year, today.month, today.day)
+        'StartTime': datetime.datetime(yesterday.year, yesterday.month, yesterday.day),
+        'EndTime': datetime.datetime(today.year, today.month, today.day)
     }
     _field_document = ecu_field_document
 
@@ -76,11 +72,12 @@ class Ec2CpuUtilization(AwsAsset):
         assets = []
         instances = Ec2(self.cred, region=self.region, dbconfig=self.dbconfig).paginate_all_assets
         pagesize = 50
+
         for index in range(len(instances) // pagesize + 1):
             _instances = instances[index * pagesize: index * pagesize + pagesize]
             if not _instances:
                 continue
-
+            metric_data_queries = []
             for instance in _instances:
                 instance_id = instance['InstanceId']
                 instance_id_sp = instance_id.split('-')[1]
@@ -90,15 +87,16 @@ class Ec2CpuUtilization(AwsAsset):
                 # metric: Minimum
                 _ecu_metric_dq[0]['MetricStat']['Metric']['Dimensions'] = dimension
                 _ecu_metric_dq[0]['Id'] = _ecu_metric_dq[0]['Id'].format(instance_id=instance_id_sp)
-                _ecu_metric_dq[0]['Label'] = _ecu_metric_dq[0]['Label'].format(instance_id=instance_id)
+                _ecu_metric_dq[0]['Label'] = _ecu_metric_dq[0]['Label'].format(instance_id=instance_id_sp)
 
                 # metric: Maximum
                 _ecu_metric_dq[1]['MetricStat']['Metric']['Dimensions'] = dimension
                 _ecu_metric_dq[1]['Id'] = _ecu_metric_dq[1]['Id'].format(instance_id=instance_id_sp)
-                _ecu_metric_dq[1]['Label'] = _ecu_metric_dq[1]['Label'].format(instance_id=instance_id)
+                _ecu_metric_dq[1]['Label'] = _ecu_metric_dq[1]['Label'].format(instance_id=instance_id_sp)
 
-                self._des_request_kwargs['MetricDataQueries'] += _ecu_metric_dq
+                metric_data_queries += _ecu_metric_dq
 
+            self._des_request_kwargs['MetricDataQueries'] = metric_data_queries
             result = self._describe(
                 self.client,
                 self._des_request,
@@ -110,7 +108,7 @@ class Ec2CpuUtilization(AwsAsset):
             metric_drs = result.get('MetricDataResults', [])
             for metric_dr in metric_drs:
                 metric, instance_id = metric_dr['Label'].split('::')
-                values = zip(metric_dr['Timestamps'], metric['Values'])
+                values = zip(metric_dr['Timestamps'], metric_dr['Values'])
                 assets += [
                     {
                         'InstanceId': instance_id,
@@ -120,6 +118,6 @@ class Ec2CpuUtilization(AwsAsset):
                         'Period': period
                     } for value in values
                 ]
-        return assets
+        return sorted(assets, key=lambda a: a['MetricTimestamp'])
 
 

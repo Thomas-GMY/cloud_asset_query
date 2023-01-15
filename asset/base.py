@@ -180,7 +180,7 @@ class Asset(metaclass=abc.ABCMeta):
         else:
             paginate_all_assets = self.paginate_all_assets
 
-        # all_assets datetime to str
+        # all_assets datetime, bool, ... to str
         paginate_all_assets = recursive_list(paginate_all_assets)
         if paginate_all_assets:
             uc = [_ for _ in self._table_args if isinstance(_, UniqueConstraint)]
@@ -213,7 +213,7 @@ class Asset(metaclass=abc.ABCMeta):
 class TencentAsset(Asset):
     _platform = 'tencent'
 
-    _describe: object = DescribeTencent
+    _describe = DescribeTencent
     _des_request_func: str = ''
     _des_request: object = None
     _response_field: str = ''

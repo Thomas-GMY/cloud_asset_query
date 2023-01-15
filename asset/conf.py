@@ -4,9 +4,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import arrow
 from sqlalchemy import Integer, String, JSON, Date, Text, DateTime, NUMERIC, DECIMAL, FLOAT
 
 PLATFORMS = ('tencent', 'aliyun')
+
+today = arrow.now().datetime
+yesterday = arrow.now().shift(days=-1).datetime
+today_zero_str = today.strftime('%Y-%m-%d 00:00:00')
+yesterday_zero_str = today.strftime('%Y-%m-%d 00:00:00')
 
 CLOUD_ASSERT_DB = {
     'host': os.getenv('CLOUD_ASSERT_HOST', ''),

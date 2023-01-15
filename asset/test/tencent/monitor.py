@@ -4,9 +4,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from asset.test.base_test import BaseTencentTest
-from asset.tencent.cvm import Cvm
+from asset.tencent.monitor import CvmCpuUsage
 
 
-class TestCvn(BaseTencentTest):
+class TestCvmCpuUsage(BaseTencentTest):
     def load_asset(self):
-        return Cvm(self.cred, self.region, dbconfig=self.db_config)
+        return CvmCpuUsage(self.cred, self.region, dbconfig=self.db_config)

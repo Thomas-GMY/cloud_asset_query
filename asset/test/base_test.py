@@ -6,28 +6,31 @@
 import os
 
 from asset.base import Asset
-from asset.utils import aws_assume_role
+from asset.utils import aws_assume_role, tencent_assume_role
 from asset.schema import DbConfig
+
 
 db_config = DbConfig(
     host=os.getenv('HOST'),
     port=os.getenv('PORT'),
     password=os.getenv('PASSWORD'),
     user=os.getenv('USER'),
-    database=os.getenv('DATABASE'),
+    database=os.getenv('DATABASE')
 )
-
-aws_arn = os.getenv('AWS_ARN')
-aws_region = 'cn-northwest-1'
-aws_cred = aws_assume_role(arn=aws_arn)
 
 
 class BaseAwsTest:
-    _asset: Asset = None
-    _region = aws_region
+    arn = os.getenv('AWS_ARN')
+    region = 'cn-northwest-1'
+    cred = aws_assume_role(arn=arn)
+    db_config = db_config
 
-    def __init__(self):
-        self.asset = self._asset(aws_cred, region=aws_region, dbconfig=db_config)
+    @property
+    def asset(self):
+        return self.load_asset()
+
+    def load_asset(self) -> Asset:
+        pass
 
     def test_account_id(self):
         assert self.asset.account_id is not None
@@ -37,3 +40,12 @@ class BaseAwsTest:
 
     def test_fetch(self):
         assert self.asset.fetch() == True
+
+
+class BaseTencentTest(BaseAwsTest):
+    arn = os.getenv('TENCENT_ARN')
+    region = 'ap-guangzhou'
+    cred = tencent_assume_role(ak=os.getenv('TENCENT_AK'), sk=os.getenv('TENCENT_SK'), arn=arn)
+
+
+
