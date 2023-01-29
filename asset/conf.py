@@ -6,13 +6,18 @@
 import os
 import arrow
 from sqlalchemy import Integer, String, JSON, Date, Text, DateTime, NUMERIC, DECIMAL, FLOAT
+from asset.schema import TencentRole, AliyunRole, AwsProfile
 
-PLATFORMS = ('tencent', 'aliyun')
+
+PROVIDERS = ('tencent', 'aliyun', 'aws')
+PROVIDER_PROFILES = {
+    'tencent': TencentRole,
+    'aliyun': AliyunRole,
+    'aws': AwsProfile
+}
 
 today = arrow.now().datetime
 yesterday = arrow.now().shift(days=-1).datetime
-today_zero_str = today.strftime('%Y-%m-%d 00:00:00')
-yesterday_zero_str = today.strftime('%Y-%m-%d 00:00:00')
 
 CLOUD_ASSERT_DB = {
     'host': os.getenv('CLOUD_ASSERT_HOST', ''),
@@ -36,62 +41,27 @@ COLUMNS_MAP = {
     'float': FLOAT
 }
 
-TENCENT_REGIONS = [
-    {
-        "Region": "ap-beijing",
-        "RegionName": "华北地区(北京)",
-        "RegionState": "AVAILABLE"
+# todo: complete cloud providers`s regions
+REGIONS = {
+    'tencent': {
+        'default_region': 'ap-shanghai',
+        'regions': [
+            'ap-beijing',
+            'ap-guangzhou',
+            'ap-hongkong',
+            'ap-shanghai',
+            'ap-shanghai-fsi',
+            'ap-shenzhen-fsi',
+            'ap-singapore',
+            'na-siliconvalley',
+            'na-toronto'
+        ]
     },
-    {
-        "Region": "ap-guangzhou",
-        "RegionName": "华南地区(广州)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "ap-hongkong",
-        "RegionName": "港澳台地区(中国香港)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "ap-shanghai",
-        "RegionName": "华东地区(上海)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "ap-shanghai-fsi",
-        "RegionName": "华东地区(上海金融)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "ap-shenzhen-fsi",
-        "RegionName": "华南地区(深圳金融)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "ap-singapore",
-        "RegionName": "亚太东南(新加坡)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "na-siliconvalley",
-        "RegionName": "美国西部(硅谷)",
-        "RegionState": "AVAILABLE"
-    },
-    {
-        "Region": "na-toronto",
-        "RegionName": "北美地区(多伦多)",
-        "RegionState": "AVAILABLE"
+    'aliyun': {
+        'default_region': 'cn-beijing',
+        'regions': [
+            'cn-qingdao',
+            'cn-beijing'
+        ]
     }
-]
-
-# todo: 补充阿里云的region
-ALIYUN_REGIONS = [
-    {
-        'Region': 'cn-qingdao',
-        'RegionName': '华北1（青岛）'
-    },
-    {
-        'Region': 'cn-beijing',
-        'RegionName': '华北2（北京）'
-    }
-]
+}

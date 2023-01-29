@@ -31,10 +31,13 @@ class AwsAssetRegister(AssetRegister):
     pass
 
 
-tencent_asset_register = TencentAssetRegister()
-aliyun_asset_register = AliyunAssetRegister()
-aws_asset_register = AwsAssetRegister()
+class CloudProviders:
+    tencent = TencentAssetRegister()
+    aliyun = AliyunAssetRegister()
+    aws = AwsAssetRegister()
 
+
+cloud_providers = CloudProviders()
 
 
 

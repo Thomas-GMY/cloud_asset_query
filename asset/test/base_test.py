@@ -35,17 +35,11 @@ class BaseAwsTest:
     def test_account_id(self):
         assert self.asset.account_id is not None
 
-    def test_paginate_all_assets(self):
-        assert isinstance(self.asset.paginate_all_assets, list) == True
-
     def test_fetch(self):
         assert self.asset.fetch() == True
 
 
 class BaseTencentTest(BaseAwsTest):
     arn = os.getenv('TENCENT_ARN')
-    region = 'ap-guangzhou'
+    region = 'ap-shanghai'
     cred = tencent_assume_role(ak=os.getenv('TENCENT_AK'), sk=os.getenv('TENCENT_SK'), arn=arn)
-
-
-

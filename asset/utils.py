@@ -23,6 +23,14 @@ def to_hump_underline(string) -> str:
     return re.sub(r"(?P<key>[A-Z])", r"_\g<key>", string).lower().strip('_')
 
 
+def register_assets(cloud_provider):
+    import importlib
+    from asset.asset_register import cloud_providers
+
+    importlib.import_module(f'asset.{cloud_provider}')
+    return getattr(cloud_providers, cloud_provider)
+
+
 def tencent_parser_response(response, response_filed: str) -> list:
     return json.loads(response.to_json_string())[response_filed]
 

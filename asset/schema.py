@@ -6,7 +6,6 @@
 import os
 from typing import List
 from pydantic import BaseModel
-from asset.conf import TENCENT_REGIONS
 from aliyunsdkcore.auth.credentials import RamRoleArnCredential
 from tencentcloud.common.credential import STSAssumeRoleCredential
 
@@ -28,7 +27,7 @@ class AssetColumn(BaseModel):
 
 class TencentRole(BaseModel):
     arn: str
-    regions: list = [region['Region'] for region in TENCENT_REGIONS]
+    regions: list
     session_name: str = 'fetch_asset'
     duration_seconds: int = 3600
 
@@ -46,7 +45,7 @@ class AwsRole(AliyunRole):
 class TencentProfile(BaseModel):
     ak: str
     sk: str
-    roles: List[TencentRole]
+    roles: List[TencentRole] = []
 
 
 class AliyunProfile(BaseModel):

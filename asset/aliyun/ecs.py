@@ -4,7 +4,7 @@
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
 
-from asset.asset_register import aliyun_asset_register
+from asset.asset_register import cloud_providers
 from asset.base import AliyunAsset, AssetColumn, UniqueConstraint
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkecs.request.v20140526.DescribeInstancesRequest import DescribeInstancesRequest
@@ -73,7 +73,7 @@ asset_columns = [
 ]
 
 
-@aliyun_asset_register.register('acs')
+@cloud_providers.aliyun.register('acs')
 class Ecs(AliyunAsset):
     _des_request = DescribeInstancesRequest()
     _response_field = 'Instances'

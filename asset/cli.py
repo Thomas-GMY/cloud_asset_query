@@ -4,14 +4,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-import sys
 import json
 import click
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from asset.commands import FetchTencent, FetchAliyun
-from asset.schema import TencentProfile, AliyunProfile, DbConfig
+from asset.schema import DbConfig
+from asset.utils import register_assets
+from asset.conf import PROVIDERS, PROVIDER_PROFILES, REGIONS
+from asset.exceptions import BaseCloudAssetException
 
 
 @click.group()
@@ -20,8 +20,48 @@ def main():
 
 
 @click.command()
-@click.option('--config', help='', type=str)
-def fetch(config):
+@click.option('--cloud-provider', help=f'support cloud providers {PROVIDERS}', type=str)
+@click.option('--profile-path', help='', type=str)
+@click.option('--assets', help='', type=str)
+@click.option('--regions', help='', type=str)
+@click.option('--dbconfig-path', help='', type=str)
+@click.option('--log-dir-path', help='', type=str, default='./')
+def fetch(cloud_provider, profile_path, assets, regions=None, dbconfig_path=None):
+    if cloud_provider not in PROVIDERS:
+        raise BaseCloudAssetException(f'not support {cloud_provider}, only support cloud providers {PROVIDERS}')
+
+    if not os.path.exists(profile_path):
+        raise BaseCloudAssetException(f'not find the profile`s file by {profile_path}')
+    else:
+        with open(profile_path, 'r') as fp:
+            profile = PROVIDER_PROFILES[cloud_provider](**json.load(fp))
+
+    assets = set(assets.split(','))
+    if not assets:
+        raise BaseCloudAssetException(f'not find assets: {assets}')
+    diff_assets = assets.difference(set(list(register_assets(cloud_provider=cloud_provider).keys())))
+    if diff_assets:
+        raise BaseCloudAssetException(f'not find {cloud_provider}`assets: {diff_assets}')
+    assets = list(assets)
+
+    if regions is None:
+        regions = REGIONS[cloud_provider]['default_region'].split(',')
+    else:
+        cloud_regions = REGIONS[cloud_provider]['regions']
+        if regions == 'all':
+            regions = cloud_regions
+        else:
+            regions = set(regions.split(','))
+            diff_regions = regions.difference(cloud_regions)
+            if diff_regions:
+                raise BaseCloudAssetException(f'not support regions: {regions}, just support: {cloud_regions}')
+            regions = list(regions)
+
+    if os.path.exists(dbconfig_path):
+        with open(dbconfig_path, 'r') as fp:
+            dbconfig = DbConfig(**json.load(fp))
+    else:
+        dbconfig = DbConfig()
 
     with open(config, 'r') as fp:
         config = json.loads(fp.read())

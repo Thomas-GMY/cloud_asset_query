@@ -3,7 +3,7 @@
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
 
-from asset.asset_register import tencent_asset_register
+from asset.asset_register import cloud_providers
 from asset.base import TencentAsset, AssetColumn, UniqueConstraint
 from tencentcloud.cvm.v20170312.cvm_client import CvmClient, models
 
@@ -36,7 +36,7 @@ asset_columns = [
 ]
 
 
-@tencent_asset_register.register('cvm')
+@cloud_providers.tencent.register('cvm')
 class Cvm(TencentAsset):
     _des_request_func = 'DescribeInstances'
     _des_request = models.DescribeInstancesRequest()

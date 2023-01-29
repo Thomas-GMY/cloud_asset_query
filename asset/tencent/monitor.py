@@ -3,38 +3,39 @@
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
 
-from asset.asset_register import tencent_asset_register
+import datetime
+from asset.asset_register import cloud_providers
 from asset.base import TencentAsset, AssetColumn, UniqueConstraint
-from asset.conf import today_zero_str, yesterday_zero_str
+from asset.conf import today, yesterday
 
 from tencentcloud.monitor.v20180724.monitor_client import MonitorClient, models
 
 ccu_queries = {
-    'NameSpace': 'QCE/CVM',
+    'Namespace': 'QCE/CVM',
     'MetricName': 'CPUUsage',
-    'Period': '3600',
+    'Period': 3600,
     'Instances': [],
-    'StartTime': yesterday_zero_str,
-    'EndTime': 'QCE/CVM',
+    'StartTime': datetime.datetime(yesterday.year, yesterday.month, yesterday.day).isoformat() + '+08:00',
+    'EndTime': datetime.datetime(today.year, today.month, today.day).isoformat() + '+08:00',
 }
 cvm_ccu_asset_columns = [
     {'name': 'InstanceId', 'type': 'str', 'len': 64},
     {'name': 'MetricName', 'type': 'str', 'len': 16},
     {'name': 'Period', 'type': 'int'},
-    {'name': 'Timestamps', 'type': 'datetime'},
-    {'name': 'value', 'type': 'float'}
+    {'name': 'Timestamp', 'type': 'datetime'},
+    {'name': 'MetricValue', 'type': 'float'}
 ]
 
 
-@tencent_asset_register.register('cvm_cpu_usage')
+@cloud_providers.tencent.register('cvm_cpu_usage')
 class CvmCpuUsage(TencentAsset):
     _des_request_func = 'GetMonitorData'
     _des_request = models.GetMonitorDataRequest()
-    _response_field = 'Response'
+    _response_field = 'DataPoints'
 
-    _table_name = 'tencent_cmv_cpu_usage'
-    _asset_columns = []
-    _table_args = (UniqueConstraint('account_id', 'timestamps', 'instance_id', name='tencent_instance_ccu'))
+    _table_name = 'tencent_cvm_cpu_usage'
+    _asset_columns = [AssetColumn(**asset_column) for asset_column in cvm_ccu_asset_columns]
+    _table_args = (UniqueConstraint('account_id', 'timestamp', 'instance_id', name='tencent_instance_ccu'), )
 
     def _get_client(self):
         return MonitorClient(self.cred, self.region)
@@ -55,9 +56,23 @@ class CvmCpuUsage(TencentAsset):
                 continue
             self._des_request.Instances = [
                 {'Dimensions': [{'Name': 'InstanceId', 'Value': _instance['InstanceId']}]} for _instance in _instances]
-            response = self._describe(
+            results = self._describe(
                 self.client, self._des_request_func, self._des_request, self._response_field).parser_response()
-            print(response)
+            for result in results:
+                count = 0
+                for _time_stamp in result['Timestamps']:
+                    assets.append(
+                        {
+                            'InstanceId': result['Dimensions'][0]['Value'],
+                            'MetricName': 'CpuUsage',
+                            'Period': 3600,
+                            'Timestamp': datetime.datetime.fromtimestamp(_time_stamp),
+                            'MetricValue': result['Values'][count]
+                        }
+                    )
+                    count += 1
+
+        return sorted(assets, key=lambda x: x['Timestamp'])
 
 
 

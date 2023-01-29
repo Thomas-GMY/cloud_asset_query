@@ -3,7 +3,7 @@
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
 
-from asset.asset_register import aws_asset_register
+from asset.asset_register import cloud_providers
 from asset.base import AwsAsset, AssetColumn, UniqueConstraint
 
 field_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances'
@@ -53,7 +53,7 @@ asset_columns = [
 ]
 
 
-@aws_asset_register.register('ec2')
+@cloud_providers.aws.register('ec2')
 class Ec2(AwsAsset):
     _asset_name = 'ec2'
     _des_request = 'describe_instances'

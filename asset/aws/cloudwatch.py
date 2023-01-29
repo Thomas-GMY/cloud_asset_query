@@ -6,7 +6,7 @@
 import copy
 import datetime
 from asset.base import AwsAsset, AssetColumn, UniqueConstraint
-from asset.asset_register import aws_asset_register
+from asset.asset_register import cloud_providers
 from asset.conf import today, yesterday
 
 ecu_asset_columns = [
@@ -48,7 +48,7 @@ ecu_metric_dq = [
 ecu_field_document = ''
 
 
-@aws_asset_register.register('ec2_cpu_utilization')
+@cloud_providers.aws.register('ec2_cpu_utilization')
 class Ec2CpuUtilization(AwsAsset):
     """
         get ec2_cpu_utilization metric, include (Minimum, Maximum)
