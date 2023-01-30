@@ -14,7 +14,8 @@ from sqlalchemy import create_engine, Table, UniqueConstraint
 from boto3 import Session
 
 from asset.asset_table import AssetTable
-from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential
+from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential,\
+    TencentProfile
 from asset.utils import to_hump_underline, get_tencent_account_id, get_aliyun_account_id, get_aws_account_id, \
     tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list
 
@@ -234,20 +235,21 @@ class TencentAsset(Asset):
 
     def _paginate_all_assets(self):
         page, assets = 0, []
-        self._des_request.Limit = 50
+        _des_request = copy.deepcopy(self._des_request)
+        _des_request.Limit = 50
 
         while True:
             response = self._describe(
-                self.client, self._des_request_func, self._des_request, self._response_field).parser_response()
+                self.client, self._des_request_func, _des_request, self._response_field).parser_response()
             if not response:
                 break
 
             assets += response
             page += 1
-            if isinstance(self._des_request.Limit, str):
-                self._des_request.Offset = str(page * int(self._des_request.Limit))
+            if isinstance(_des_request.Limit, str):
+                _des_request.Offset = str(page * int(_des_request.Limit))
             else:
-                self._des_request.Offset = page * self._des_request.Limit
+                _des_request.Offset = page * _des_request.Limit
         return assets
 
     def _get_client(self):
@@ -255,6 +257,18 @@ class TencentAsset(Asset):
 
     def _get_account_id(self):
         return get_tencent_account_id(self.cred)
+
+    @classmethod
+    def load_cred(cls, profile: TencentProfile) -> List[STSAssumeRoleCredential]:
+        return [
+            STSAssumeRoleCredential(
+                profile.ak,
+                profile.sk,
+                role.arn,
+                role.session_name,
+                duration_seconds=role.duration_seconds
+            ) for role in profile.roles
+        ]
 
 
 class AliyunAsset(Asset):

@@ -44,7 +44,7 @@ class Cvm(TencentAsset):
 
     _table_name = 'tencent_cvm'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in asset_columns]
-    _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='tencent_instance'))
+    _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='tencent_instance'),)
 
     def _get_client(self):
         return CvmClient(self.cred, self.region)

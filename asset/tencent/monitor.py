@@ -2,7 +2,7 @@
 
 # Copyright The Cloud Asset Authors.
 # SPDX-License-Identifier: Apache-2.0
-
+import copy
 import datetime
 from asset.asset_register import cloud_providers
 from asset.base import TencentAsset, AssetColumn, UniqueConstraint
@@ -42,8 +42,9 @@ class CvmCpuUsage(TencentAsset):
 
     def _paginate_all_assets(self):
         """初始化self._des_request的参数↓"""
+        _des_request = copy.deepcopy(self._des_request)
         for key, value in ccu_queries.items():
-            setattr(self._des_request, key, value)
+            setattr(_des_request, key, value)
 
         from asset.tencent.cvm import Cvm
         assets = []
@@ -54,10 +55,10 @@ class CvmCpuUsage(TencentAsset):
             _instances = instances[index * pagesize: index * pagesize + pagesize]
             if not _instances:
                 continue
-            self._des_request.Instances = [
+            _des_request.Instances = [
                 {'Dimensions': [{'Name': 'InstanceId', 'Value': _instance['InstanceId']}]} for _instance in _instances]
             results = self._describe(
-                self.client, self._des_request_func, self._des_request, self._response_field).parser_response()
+                self.client, self._des_request_func, _des_request, self._response_field).parser_response()
             for result in results:
                 count = 0
                 for _time_stamp in result['Timestamps']:

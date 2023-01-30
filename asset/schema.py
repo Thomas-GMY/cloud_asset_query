@@ -27,7 +27,6 @@ class AssetColumn(BaseModel):
 
 class TencentRole(BaseModel):
     arn: str
-    regions: list
     session_name: str = 'fetch_asset'
     duration_seconds: int = 3600
 

@@ -6,13 +6,13 @@
 import os
 import arrow
 from sqlalchemy import Integer, String, JSON, Date, Text, DateTime, NUMERIC, DECIMAL, FLOAT
-from asset.schema import TencentRole, AliyunRole, AwsProfile
+from asset.schema import TencentProfile, AliyunProfile, AwsProfile
 
 
 PROVIDERS = ('tencent', 'aliyun', 'aws')
 PROVIDER_PROFILES = {
-    'tencent': TencentRole,
-    'aliyun': AliyunRole,
+    'tencent': TencentProfile,
+    'aliyun': AliyunProfile,
     'aws': AwsProfile
 }
 
