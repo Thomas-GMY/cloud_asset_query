@@ -15,7 +15,7 @@ from boto3 import Session
 
 from asset.asset_table import AssetTable
 from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential,\
-    TencentProfile
+    TencentProfile, AliyunProfile
 from asset.utils import to_hump_underline, get_tencent_account_id, get_aliyun_account_id, get_aws_account_id, \
     tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list
 
@@ -259,7 +259,7 @@ class TencentAsset(Asset):
         return get_tencent_account_id(self.cred)
 
     @classmethod
-    def load_cred(cls, profile: TencentProfile) -> List[STSAssumeRoleCredential]:
+    def load_creds(cls, profile: TencentProfile) -> List[STSAssumeRoleCredential]:
         return [
             STSAssumeRoleCredential(
                 profile.ak,
@@ -331,6 +331,17 @@ class AliyunAsset(Asset):
 
     def _get_account_id(self):
         return get_aliyun_account_id(cred=self.cred)
+
+    @classmethod
+    def load_creds(cls, profile: AliyunProfile) -> List[RamRoleArnCredential]:
+        return [
+            RamRoleArnCredential(
+                profile.ak,
+                profile.sk,
+                role.arn,
+                role.session_name
+            ) for role in profile.roles
+        ]
 
 
 class AwsAsset(Asset):

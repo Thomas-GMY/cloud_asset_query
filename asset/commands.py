@@ -24,7 +24,7 @@ class Fetch:
     def __init__(
             self,
             cloud_provider,
-            profile: Union[TencentProfile],
+            profile: Union[TencentProfile, AliyunProfile],
             assets: Union[list, str],
             regions,
             log_dir_path=_default_log_dir_path,
@@ -45,7 +45,7 @@ class Fetch:
         with FetchCtx(self):
             for asset_name in self.assets:
                 asset_obj = self._register_assets[asset_name]
-                for cred in asset_obj.load_cred(self.profile):
+                for cred in asset_obj.load_creds(self.profile):
                     for region in self.regions:
                         asset = asset_obj(cred, region=region, dbconfig=self.dbconfig)
                         try:

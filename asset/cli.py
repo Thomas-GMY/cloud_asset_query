@@ -25,7 +25,7 @@ def main():
 @click.option('--profile-path', help='', type=str)
 @click.option('--assets', help='', type=str)
 @click.option('--regions', help='', type=str)
-@click.option('--log-dir-path', help='', type=str)
+@click.option('--log-dir-path', help='', type=str, default='./')
 def fetch(cloud_provider, profile_path, assets, regions=None, log_dir_path='./'):
     if cloud_provider not in PROVIDERS:
         raise BaseCloudAssetException(f'not support {cloud_provider}, only support cloud providers {PROVIDERS}')

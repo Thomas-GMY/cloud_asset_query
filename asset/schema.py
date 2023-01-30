@@ -33,7 +33,6 @@ class TencentRole(BaseModel):
 
 class AliyunRole(BaseModel):
     arn: str
-    regions: list = []
     session_name: str = 'fetch_asset'
 
 
