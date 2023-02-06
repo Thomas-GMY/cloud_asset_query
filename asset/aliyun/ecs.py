@@ -73,7 +73,7 @@ asset_columns = [
 ]
 
 
-@cloud_providers.aliyun.register('acs')
+@cloud_providers.aliyun.register('ecs')
 class Ecs(AliyunAsset):
     _des_request = DescribeInstancesRequest()
     _response_field = 'Instances'

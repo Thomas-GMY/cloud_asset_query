@@ -15,9 +15,9 @@ from boto3 import Session
 
 from asset.asset_table import AssetTable
 from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential,\
-    TencentProfile, AliyunProfile
+    TencentProfile, AliyunProfile, AwsProfile
 from asset.utils import to_hump_underline, get_tencent_account_id, get_aliyun_account_id, get_aws_account_id, \
-    tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list
+    tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list, aws_assume_role
 
 
 class Describe:
@@ -210,6 +210,10 @@ class Asset(metaclass=abc.ABCMeta):
 
         return _assets
 
+    @classmethod
+    def load_creds(cls, profile):
+        raise NotImplementedError("")
+
 
 class TencentAsset(Asset):
     _platform = 'tencent'
@@ -373,19 +377,20 @@ class AwsAsset(Asset):
 
     def _paginate_all_assets(self) -> list:
         assets = []
+        _des_request_kwargs = copy.deepcopy(self._des_request_kwargs)
         while True:
             _assets, next_token = self._describe(
                 self.client,
                 self._des_request,
                 self._response_field,
                 self._child_response_filed,
-                des_request_kwargs=self._des_request_kwargs,
+                des_request_kwargs=_des_request_kwargs,
                 parser_response_func=self.parser_response
             ).parser_response()
             assets += _assets
             if next_token is None:
                 break
-            self._des_request_kwargs.update({'NextToken': next_token})
+            _des_request_kwargs.update({'NextToken': next_token})
         return assets
 
     def _get_client(self):
@@ -398,3 +403,8 @@ class AwsAsset(Asset):
 
     def _get_account_id(self):
         return get_aws_account_id(self.cred)
+
+    @classmethod
+    def load_creds(cls, profile: AwsProfile) -> List[AwsCredential]:
+        for role in profile.roles:
+            yield aws_assume_role(role.arn, role_session_name=role.session_name, duration_seconds=role.duration_seconds)

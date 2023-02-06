@@ -9,7 +9,8 @@ from setuptools import setup
 packages = [
     'asset',
     'asset.aliyun',
-    'asset.tencent'
+    'asset.tencent',
+    'asset.aws'
 ]
 install_requires = [
     'tencentcloud-sdk-python==3.0.773',
@@ -24,7 +25,9 @@ install_requires = [
     'psycopg2==2.9.5',
     'click==8.1.3',
     'pydantic==1.10.2',
-    'requests==2.28.1'
+    'requests==2.28.1',
+    'pyyaml==6.0',
+    'arrow==1.2.3'
 ]
 entry_points = {'console_scripts': ['cloud-asset = asset.cli:main']}
 setup_kwargs = {

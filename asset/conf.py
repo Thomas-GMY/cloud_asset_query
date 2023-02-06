@@ -61,7 +61,15 @@ REGIONS = {
         'default_region': 'cn-beijing',
         'regions': [
             'cn-qingdao',
-            'cn-beijing'
+            'cn-beijing',
+            'cn-chengdu'
+        ]
+    },
+    'aws': {
+        'default_region': 'cn-northwest-1',
+        'regions': [
+            'cn-northwest-1',
+            'cn-north-1'
         ]
     }
 }

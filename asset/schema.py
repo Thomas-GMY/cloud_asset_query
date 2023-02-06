@@ -52,7 +52,7 @@ class AliyunProfile(BaseModel):
     roles: List[AliyunRole] = []
 
 
-class AwsProfile(AliyunProfile):
+class AwsProfile(BaseModel):
     roles: List[AwsRole] = []
 
 

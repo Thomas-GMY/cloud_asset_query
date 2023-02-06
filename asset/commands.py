@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-import traceback
 import logging
 import importlib
 
@@ -59,7 +58,6 @@ class Fetch:
                             self.logger.info(
                                 f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----fail----error: {e}'
                             )
-                            print(traceback.format_exc())
                             continue
 
     @classmethod
