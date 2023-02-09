@@ -53,7 +53,7 @@ class Ec2CpuUtilization(AwsAsset):
     """
         get ec2_cpu_utilization metric, include (Minimum, Maximum)
     """
-    _asset_name = 'cloudwatch'
+    _client_name = 'cloudwatch'
     _des_request = 'get_metric_data'
     _response_field = 'MetricDataResults'
     _des_request_kwargs: dict = {
