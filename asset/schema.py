@@ -20,7 +20,7 @@ class DbConfig(BaseModel):
 
 class AssetColumn(BaseModel):
     name: str
-    type: str
+    type: str = 'str'
     length: int = None
     kwargs: dict = {'nullable': True, 'default': None}
 
