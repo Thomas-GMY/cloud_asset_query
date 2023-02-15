@@ -131,4 +131,7 @@ dmypy.json
 draft.py
 config.json
 config.py
+config.yml
 /fetch_log
+*.xml
+*.iml
