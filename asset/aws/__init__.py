@@ -5,3 +5,5 @@
 
 from asset.aws import cloudwatch
 from asset.aws import ec2
+from asset.aws import s3
+from asset.aws import rds

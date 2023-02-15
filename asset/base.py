@@ -351,7 +351,7 @@ class AliyunAsset(Asset):
 class AwsAsset(Asset):
     _platform = 'aws'
 
-    _asset_name: str = ''
+    _client_name: str = ''
     _des_request: str = ''
     _response_field: str = ''
     _child_response_filed: str = None
@@ -395,7 +395,7 @@ class AwsAsset(Asset):
 
     def _get_client(self):
         """由子类实现"""
-        return Session(**self.cred.dict()).client(self._asset_name, region_name=self.region)
+        return Session(**self.cred.dict()).client(self._client_name, region_name=self.region)
 
     def _get_assets(self) -> list:
         assets, _ = self.asset_describe.parser_response()

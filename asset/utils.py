@@ -14,7 +14,7 @@ from aliyunsdksts.request.v20150401 import GetCallerIdentityRequest
 from aliyunsdkcore.client import AcsClient
 
 from boto3 import client as aws_client
-from typing import Tuple
+from typing import Tuple, Union
 
 from asset.schema import AwsCredential, STSAssumeRoleCredential
 
@@ -41,7 +41,8 @@ def aliyun_parser_response(response, response_filed: str, child_response_filed: 
     return json.loads(response)[response_filed]
 
 
-def aws_parser_response(response: dict, response_filed: str, child_response_filed: str = None) -> Tuple[list, str]:
+def aws_parser_response(
+        response: dict, response_filed: str, child_response_filed: str = None) -> Tuple[Union[list, str, dict], str]:
     assets = response.get(response_filed)
     next_token = response.get('NextToken')
     if child_response_filed is not None:
