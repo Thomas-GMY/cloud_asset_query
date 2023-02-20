@@ -44,7 +44,7 @@ def aliyun_parser_response(response, response_filed: str, child_response_filed: 
 def aws_parser_response(
         response: dict, response_filed: str, child_response_filed: str = None) -> Tuple[Union[list, str, dict], str]:
     assets = response.get(response_filed)
-    next_token = response.get('NextToken')
+    next_token = response.get('NextToken') or response.get('NextMarker')
     if child_response_filed is not None:
         if isinstance(assets, list):
             _assets = []

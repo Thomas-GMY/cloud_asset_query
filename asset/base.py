@@ -103,7 +103,7 @@ class Asset(metaclass=abc.ABCMeta):
     _table_name: str = None
     _asset_columns: List[AssetColumn] = None
     _is_hump_underline: bool = True
-    _table_args: tuple = None
+    _table_args: tuple = tuple()
     _table_kwargs: dict = None
     _default_columns = [
         AssetColumn(name='account_id', type='str', len=128, kwargs={'nullable': False, 'default': ''}),
@@ -356,6 +356,7 @@ class AwsAsset(Asset):
     _response_field: str = ''
     _child_response_filed: str = None
     _des_request_kwargs: dict = {'MaxResults': 50}
+    _next_type = 'NextToken'
 
     _describe = DescribeAws
 
@@ -390,7 +391,7 @@ class AwsAsset(Asset):
             assets += _assets
             if next_token is None:
                 break
-            _des_request_kwargs.update({'NextToken': next_token})
+            _des_request_kwargs.update({self._next_type: next_token})
         return assets
 
     def _get_client(self):
