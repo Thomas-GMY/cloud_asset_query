@@ -83,6 +83,8 @@ def recursive_list(value):
             _value_list.append(recursive_list(_value))
         elif isinstance(value, bool):
             _value_list.append(str(_value))
+        elif isinstance(value, datetime.datetime):
+            _value_list = value.strftime('%Y-%m-%d %H:%M:%S')
         else:
             _value_list.append(_value)
     return _value_list

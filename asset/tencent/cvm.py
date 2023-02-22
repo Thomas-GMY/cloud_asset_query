@@ -35,6 +35,8 @@ asset_columns = [
     {'name': 'CamRoleName', 'type': 'str', 'len': 128}
 ]
 
+cvm_field_document = 'https://cloud.tencent.com/document/api/213/15728'
+
 
 @cloud_providers.tencent.register('cvm')
 class Cvm(TencentAsset):
@@ -45,6 +47,7 @@ class Cvm(TencentAsset):
     _table_name = 'tencent_cvm'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in asset_columns]
     _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='tencent_instance'),)
+    _field_document = cvm_field_document
 
     def _get_client(self):
         return CvmClient(self.cred, self.region)

@@ -26,6 +26,8 @@ cvm_ccu_asset_columns = [
     {'name': 'MetricValue', 'type': 'float'}
 ]
 
+get_metric_field_document = 'https://cloud.tencent.com/document/api/248/31014'
+
 
 @cloud_providers.tencent.register('cvm_cpu_usage')
 class CvmCpuUsage(TencentAsset):
@@ -36,6 +38,7 @@ class CvmCpuUsage(TencentAsset):
     _table_name = 'tencent_cvm_cpu_usage'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in cvm_ccu_asset_columns]
     _table_args = (UniqueConstraint('account_id', 'timestamp', 'instance_id', name='tencent_instance_ccu'), )
+    _field_document = get_metric_field_document
 
     def _get_client(self):
         return MonitorClient(self.cred, self.region)

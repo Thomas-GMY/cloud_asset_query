@@ -4,9 +4,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from asset.test.base_test import BaseTencentTest
-from asset.tencent.cos import Cos
+from asset.tencent.clb import Clb
 
 
-class TestCos(BaseTencentTest):
+class TestClb(BaseTencentTest):
     def load_asset(self):
-        return Cos(self.cred, self.region, dbconfig=self.db_config)
+        return Clb(self.cred, self.region, dbconfig=self.db_config)
