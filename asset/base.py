@@ -107,6 +107,7 @@ class Asset(metaclass=abc.ABCMeta):
     _table_kwargs: dict = None
     _default_columns = [
         AssetColumn(name='account_id', type='str', len=128, kwargs={'nullable': False, 'default': ''}),
+        AssetColumn(name='region', type='str', len=128, kwargs={'nullable': False, 'default': ''}),
         AssetColumn(
             name='record_date', type='date',
             kwargs={'nullable': False, 'default': datetime.datetime.now, 'onupdate': datetime.datetime.now}
@@ -137,6 +138,8 @@ class Asset(metaclass=abc.ABCMeta):
         for default_column in self._default_columns:
             if default_column.name == 'account_id':
                 default_column.kwargs['default'] = self.account_id
+            if default_column.name == 'region':
+                default_column.kwargs['default'] = self.region
 
     @property
     def engine(self):
@@ -201,7 +204,7 @@ class Asset(metaclass=abc.ABCMeta):
             _asset_keys = {to_hump_underline(key): key for key in _.keys()}
             for asset_column in asset_columns:
                 if asset_column not in _asset_keys:
-                    if asset_column in ('account_id', 'record_date'):
+                    if asset_column in ('account_id', 'record_date', 'region'):
                         continue
                     _asset.update({asset_column: None})
                 else:
@@ -223,6 +226,8 @@ class TencentAsset(Asset):
     _des_request: object = None
     _response_field: str = ''
 
+    _paginate_type = 'int'  # int or str
+
     def __init__(
             self,
             cred: STSAssumeRoleCredential,
@@ -240,7 +245,7 @@ class TencentAsset(Asset):
     def _paginate_all_assets(self):
         page, assets = 0, []
         _des_request = copy.deepcopy(self._des_request)
-        _des_request.Limit = 50
+        _des_request.Limit = 50 if self._paginate_type == 'int' else '50'
 
         while True:
             response = self._describe(
@@ -249,7 +254,7 @@ class TencentAsset(Asset):
                 break
 
             assets += response
-            page += 1
+            page = 1
             if isinstance(_des_request.Limit, str):
                 _des_request.Offset = str(page * int(_des_request.Limit))
             else:

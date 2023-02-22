@@ -31,7 +31,7 @@ def register_assets(cloud_provider):
     return getattr(cloud_providers, cloud_provider)
 
 
-def tencent_parser_response(response, response_filed: str) -> list:
+def tencent_parser_response(response, response_filed: str) -> Union[list, dict]:
     return json.loads(response.to_json_string())[response_filed]
 
 

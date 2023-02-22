@@ -45,7 +45,7 @@ ecu_metric_dq = [
         }
     }
 ]
-ecu_field_document = ''
+ecu_field_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Client.get_metric_data'
 
 
 @cloud_providers.aws.register('ec2_cpu_utilization')

@@ -74,7 +74,6 @@ def fetch(cloud_provider, profile_path, assets, regions=None, log_dir_path='./')
         if diff_assets:
             raise BaseCloudAssetException(f'not find {cloud_provider}`assets: {diff_assets}')
         assets = list(assets)
-    print(cloud_provider_profile)
     cloud_provider_profile = PROVIDER_PROFILES[cloud_provider](**cloud_provider_profile)
 
     Fetch(cloud_provider, cloud_provider_profile, assets, regions, log_dir_path=log_dir_path, dbconfig=dbconfig).fetch()

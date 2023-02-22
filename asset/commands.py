@@ -8,7 +8,7 @@ import logging
 import importlib
 
 from asset.asset_register import cloud_providers
-from asset.schema import DbConfig, TencentProfile, AliyunProfile
+from asset.schema import DbConfig, TencentProfile, AliyunProfile, AwsProfile
 from asset.ctx import FetchCtx
 
 from typing import Union
@@ -23,7 +23,7 @@ class Fetch:
     def __init__(
             self,
             cloud_provider,
-            profile: Union[TencentProfile, AliyunProfile],
+            profile: Union[TencentProfile, AliyunProfile, AwsProfile],
             assets: Union[list, str],
             regions,
             log_dir_path=_default_log_dir_path,
@@ -79,9 +79,6 @@ class Fetch:
         self.logger.addHandler(handler)
         self.logger.addHandler(console_handler)
         self.logger.setLevel(logging.INFO)
-
-
-
 
 
 

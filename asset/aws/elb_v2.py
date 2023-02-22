@@ -30,20 +30,16 @@ elbv2_asset_columns = [
     {'name': 'Tags', 'type': 'list'},
 ]
 elbv2_listener_asset_columns = [
+    {'name': 'ListenerArn', 'type': 'str'},
     {'name': 'LoadBalancerArn', 'type': 'str'},
-    {'name': 'DNSName', 'type': 'str'},
-    {'name': 'CanonicalHostedZoneId', 'type': 'str'},
-    {'name': 'CreatedTime', 'type': 'date'},
-    {'name': 'LoadBalancerName', 'type': 'str'},
-    {'name': 'Scheme', 'type': 'str'},
-    {'name': 'VpcId', 'type': 'str'},
-    {'name': 'State', 'type': 'dict'},
-    {'name': 'Type', 'type': 'str'},
-    {'name': 'AvailabilityZones', 'type': 'dict'},
-    {'name': 'SecurityGroups', 'type': 'dict'},
-    {'name': 'IpAddressType', 'type': 'str'},
-    {'name': 'CustomerOwnedIpv4Pool', 'type': 'str'}
+    {'name': 'Port', 'type': 'int'},
+    {'name': 'Protocol', 'type': 'str'},
+    {'name': 'Certificates', 'type': 'dict'},
+    {'name': 'SslPolicy', 'type': 'str'},
+    {'name': 'DefaultActions', 'type': 'dict'},
+    {'name': 'AlpnPolicy', 'type': 'dict'}
 ]
+
 elbv2_tgs_asset_columns = [
     {'name': 'TargetGroupArn', 'type': 'str'},
     {'name': 'TargetGroupName', 'type': 'str'},
@@ -65,7 +61,9 @@ elbv2_tgs_asset_columns = [
     {'name': 'IpAddressType', 'type': 'str'}
 ]
 elbv2_tas_health_asset_columns = [
-    {'name': 'Target', 'type': 'dict'},
+    # {'name': 'Target', 'type': 'dict'},
+    {'name': 'Id', 'type': 'str'},
+    {'name': 'Port', 'type': 'int'},
     {'name': 'HealthCheckPort', 'type': 'str'},
     {'name': 'TargetHealth', 'type': 'dict'},
     {'name': 'TargetGroupArn', 'type': 'str'}
@@ -129,7 +127,7 @@ class ElbV2Listeners(AwsAsset):
     _table_name = 'aws_elb_v2_listener'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in elbv2_listener_asset_columns]
     _table_args = (UniqueConstraint('account_id', 'record_date', 'listener_arn', name='aws_uc_elbv2_listener'),)
-    _field_document = elbv2_tgs_filed_document
+    _field_document = elbv2_listener_filed_document
 
     def _paginate_all_assets(self) -> list:
         assets = []
@@ -166,7 +164,7 @@ class ElbV2TargetGroups(AwsAsset):
     _table_name = 'aws_elb_v2_target_groups'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in elbv2_tgs_asset_columns]
     _table_args = (UniqueConstraint('account_id', 'record_date', 'target_group_arn', name='aws_uc_elbv2_target_groups'),)
-    _field_document = elbv2_listener_filed_document
+    _field_document = elbv2_tgs_filed_document
 
 
 @cloud_providers.aws.register('elb_v2_target_group_health')
@@ -177,9 +175,10 @@ class ElbV2TargetGroupHealth(AwsAsset):
     _des_request_kwargs: dict = {'PageSize': 50}
     _next_type = 'Marker'
 
-    _table_name = 'aws_elb_v2_target_groups'
+    _table_name = 'aws_elb_v2_target_group_health'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in elbv2_tas_health_asset_columns]
-    # _table_args = (UniqueConstraint('account_id', 'record_date', 'target_group_arn', name='aws_uc_elbv2_target_groups'),)
+    _table_args = (
+        UniqueConstraint('account_id', 'record_date', 'id', 'target_group_arn',  name='aws_uc_elbv2_tg_health'),)
     _field_document = elbv2_tgs_health_filed_document
 
     def _paginate_all_assets(self) -> list:
@@ -196,6 +195,7 @@ class ElbV2TargetGroupHealth(AwsAsset):
                 parser_response_func=self.parser_response
             ).parser_response()
             for _asset in _assets:
+                _asset.update(_asset.pop('Target'))
                 _asset.update({'TargetGroupArn': arn})
             assets += _assets
         return assets
