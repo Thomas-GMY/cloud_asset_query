@@ -52,9 +52,9 @@ REGIONS = {
             'ap-shanghai',
             'ap-shanghai-fsi',
             'ap-shenzhen-fsi',
-            'ap-singapore',
-            'na-siliconvalley',
-            'na-toronto'
+            'ap-nanjing',
+            'ap-chengdu',
+            'ap-chongqing'
         ]
     },
     'aliyun': {
@@ -62,7 +62,18 @@ REGIONS = {
         'regions': [
             'cn-qingdao',
             'cn-beijing',
-            'cn-chengdu'
+            'cn-chengdu',
+            'cn-zhangjiakou',
+            'cn-huhehaote',
+            'cn-wulanchabu',
+            'cn-hangzhou',
+            'cn-shanghai',
+            'cn-nanjing',
+            'cn-fuzhou',
+            'cn-shenzhen',
+            'cn-heyuan',
+            'cn-guangzhou',
+            'cn-hongkong'
         ]
     },
     'aws': {

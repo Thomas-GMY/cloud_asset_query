@@ -1,0 +1,29 @@
+dbconfig:
+  host: xxxx
+  port: 5432
+  password: xxx
+  user: xxxx
+  database: xxxx
+
+cloud_providers:
+    - cloud_provider: tencent
+      ak: xxx
+      sk: xxx
+      regions: [ap-shanghai]
+      roles:
+        - arn: xxxx
+          session_name: fetch_asset
+
+    - cloud_provider: aliyun
+      ak: xxxx
+      sk: xxxx
+      regions: []
+      roles:
+        - arn: xxx
+          session_name: fetch_asset
+        - arn: xxxx
+
+    - cloud_provider: aws
+      regions: [cn-northwest-1]
+      roles:
+        - arn: xxxx

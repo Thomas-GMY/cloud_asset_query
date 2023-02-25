@@ -1,6 +1,6 @@
 ## Cloud Asset Query
 
-云资产（云资源）采集到postgresql，支持的云代理商包括（腾讯云、阿里云、AWS）
+云资产（云资源）采集到postgresql，支持的云代理商包括（腾讯云、阿里云、AWS），并支持通过role多账号方式采集
 
 ----
 
@@ -9,8 +9,9 @@
     cloud-asset [fetch] [--cloud-provider] [--profile-path] [--assets] [--regions] [--log-dir-path]
 
 *参数详情*
-- --cloud-provider: 支持的云厂商(aws、aliyun、tencent-cloud)
-- --profile-path: 配置文件路径
+- --cloud-provider: 支持的云厂商(aws、aliyun、tencent)
+- --profile-path: 配置文件路径，采用assume role的方式去获取资产(即使是同一个账号、也需要通过ak/sk去assume role)，这里需要注意，Aws的ak/sk不需要在profile设置
+只需要根据boto3设置即可(只需要填写role的arn即可)、有不明白可以email到gmy.big.father@gmail.com。
 - --assets: 需要采集的云资产，具体资产列表请查看具体云厂商，支持多个资产一起采集，格式为xxx,xxx需要以,号分开。（默认为all，表示去采集该云厂商下以支持的全部云资产）
 - --regions: 表示采集该region下面的资产，支持多个region一起采集，格式为xxx,xxx需要以,号分开(默认为all,去采集所有region)
 - --log-dir-path: 输出的日志文件存储路径
@@ -20,7 +21,7 @@
 ### AWS
 **command demo**
 
-    cloud-asset fetch --cloud-provider aws --profile xxx.yaml --assets ec2,security_groups --regions cn-northwest-1
+    cloud-asset fetch --cloud-provider aws --profile-path xxx.yaml --assets ec2,security_groups --regions cn-northwest-1
 
 ##### 支持的云资产列表，基于boto3(1.26.29)
 
@@ -47,7 +48,7 @@
 ### 腾讯云
 **command demo**
 
-    cloud-asset fetch --cloud-provider tencent --profile xxx.yaml --assets cvm,cos --regions ap-shanghai
+    cloud-asset fetch --cloud-provider tencent --profile-path xxx.yaml --assets cvm,cos --regions ap-shanghai
 
 ##### 支持的云资产列表，基于tencentcloud-sdk-python(3.0.773), cos-python-sdk-v5(1.9.22)
 | 资产                 | 描述          | 字段文档                                                                                                                             |
@@ -66,4 +67,11 @@
 
 
 ### 阿里云
+**command demo**
+
+    cloud-asset fetch --cloud-provider aliyun --profile-path xxx.yaml --assets ecs
+##### 支持的云资产列表
+| 资产  | 描述      | 字段文档                                                                                                                             |
+|-----|---------|--------------------------------------------------------|
+| ecs | ecs(虚机) | [go](ecs_field_document)|
     

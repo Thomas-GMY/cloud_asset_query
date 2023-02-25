@@ -72,6 +72,8 @@ asset_columns = [
     {'name': 'ImageOptions', 'type': 'dict'}
 ]
 
+ecs_field_document = 'https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping'
+
 
 @cloud_providers.aliyun.register('ecs')
 class Ecs(AliyunAsset):
@@ -82,6 +84,7 @@ class Ecs(AliyunAsset):
     _table_name = 'aliyun_ecs'
     _asset_columns = [AssetColumn(**asset_column) for asset_column in asset_columns]
     _table_args = (UniqueConstraint('account_id', 'record_date', 'instance_id', name='aliyun_instance'),)
+    _field_document = ecs_field_document
 
     def _get_client(self):
         return AcsClient(credential=self.cred, region_id=self.region)
