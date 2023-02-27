@@ -3,6 +3,10 @@
 云资产（云资源）采集到postgresql，支持的云代理商包括（腾讯云、阿里云、AWS），并支持通过role多账号方式采集
 
 ----
+**安装**
+    
+    pip install cloud-asset
+
 
 **命令格式**
 

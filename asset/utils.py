@@ -16,7 +16,7 @@ from aliyunsdkcore.client import AcsClient
 from boto3 import client as aws_client
 from typing import Tuple, Union
 
-from asset.schema import AwsCredential, STSAssumeRoleCredential
+from asset.schema import AwsCredential, STSAssumeRoleCredential, RamRoleArnCredential
 
 
 def to_hump_underline(string) -> str:
@@ -119,6 +119,10 @@ def aws_assume_role(arn, role_session_name='fetch_asset', duration_seconds=3600)
 
 def tencent_assume_role(ak, sk, arn, session_name='fetch_asset', duration_seconds=3600):
     return STSAssumeRoleCredential(ak, sk, arn, session_name, duration_seconds)
+
+
+def aliyun_assume_role(ak, sk, arn, session_name='fetch_asset'):
+    return RamRoleArnCredential(ak, sk, arn, session_name)
 
 
 

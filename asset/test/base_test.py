@@ -6,7 +6,7 @@
 import os
 
 from asset.base import Asset
-from asset.utils import aws_assume_role, tencent_assume_role
+from asset.utils import aws_assume_role, tencent_assume_role, aliyun_assume_role
 from asset.schema import DbConfig
 
 
@@ -43,3 +43,9 @@ class BaseTencentTest(BaseAwsTest):
     arn = os.getenv('TENCENT_ARN')
     region = 'ap-shanghai'
     cred = tencent_assume_role(ak=os.getenv('TENCENT_AK'), sk=os.getenv('TENCENT_SK'), arn=arn)
+
+
+class BaseAliyunTest(BaseAwsTest):
+    arn = os.getenv('ALIYUN_ARN')
+    region = 'cn-chengdu'
+    cred = aliyun_assume_role(ak=os.getenv('ALIYUN_AK'), sk=os.getenv('ALIYUN_SK'), arn=arn)
