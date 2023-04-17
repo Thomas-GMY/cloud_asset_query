@@ -280,4 +280,3 @@ class SecurityGroups(TencentAsset):
 
     def _get_client(self):
         return VpcClient(self.cred, self.region)
-

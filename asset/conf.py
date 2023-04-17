@@ -73,7 +73,22 @@ REGIONS = {
             'cn-shenzhen',
             'cn-heyuan',
             'cn-guangzhou',
-            'cn-hongkong'
+            'cn-hongkong',
+
+            'ap-southeast-1',
+            'ap-southeast-2',
+            'ap-southeast-3',
+            'ap-southeast-5',
+            'ap-southeast-6',
+            'ap-southeast-7',
+            'ap-south-1',
+            'ap-northeast-1',
+            'ap-northeast-2',
+            'us-west-1',
+            'us-east-1',
+            'eu-central-1',
+            'eu-west-1',
+            'me-east-1'
         ]
     },
     'aws': {

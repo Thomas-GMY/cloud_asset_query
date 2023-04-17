@@ -12,6 +12,7 @@ vpc_field_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/re
 subnet_field_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_subnets'
 sg_field_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_subnets'
 nt_filed_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_network_interfaces'
+eip_filed_document = 'https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2/client/describe_addresses.html'
 
 ec2_asset_columns = [
     {'name': 'AmiLaunchIndex ', 'type': 'int'},
@@ -143,6 +144,22 @@ nt_asset_columns = [
     {'name': 'Ipv6Native', 'type': 'bool'},
     {'name': 'Ipv6Address', 'type': 'str'}
 ]
+eip_assets_columns = [
+    {'name': 'InstanceId', 'type': 'str'},
+    {'name': 'PublicIp', 'type': 'str'},
+    {'name': 'AllocationId', 'type': 'str'},
+    {'name': 'AssociationId', 'type': 'str'},
+    {'name': 'Domain', 'type': 'str'},
+    {'name': 'NetworkInterfaceId', 'type': 'str'},
+    {'name': 'NetworkInterfaceOwnerId', 'type': 'str'},
+    {'name': 'PrivateIpAddress', 'type': 'str'},
+    {'name': 'Tags', 'type': 'dict'},
+    {'name': 'PublicIpv4Pool', 'type': 'str'},
+    {'name': 'NetworkBorderGroup', 'type': 'str'},
+    {'name': 'CustomerOwnedIp', 'type': 'str'},
+    {'name': 'CustomerOwnedIpv4Pool', 'type': 'str'},
+    {'name': 'CarrierIp', 'type': 'str'}
+]
 
 
 @cloud_providers.aws.register('ec2')
@@ -217,5 +234,16 @@ class NetworkInterfaces(AwsAsset):
     _table_args = (UniqueConstraint('account_id', 'record_date', 'network_interface_id', name='aws_uc_nt'),)
     _field_document = nt_filed_document
 
+
+@cloud_providers.aws.register('eips')
+class NetworkInterface(AwsAsset):
+    _client_name = 'ec2'
+    _des_request = 'describe_addresses'
+    _response_field = 'Addresses'
+
+    _table_name = 'aws_eips'
+    _asset_columns = [AssetColumn(**asset_column) for asset_column in eip_assets_columns]
+    _table_args = (UniqueConstraint('account_id', 'record_date', 'public_ip', name='aws_uc_eip'),)
+    _field_document = nt_filed_document
 
 

@@ -297,6 +297,7 @@ class AliyunAsset(Asset):
             parser_response: callable = aliyun_parser_response
     ):
         super(AliyunAsset, self).__init__(cred, region=region, dbconfig=dbconfig, parser_response=parser_response)
+        self._des_request = self._des_request()
         self._des_request.set_accept_format('json')
         """
                     client,
@@ -329,6 +330,7 @@ class AliyunAsset(Asset):
             assets += response
             page += 1
             self._des_request.set_PageNumber(page*page_size)
+        print(assets)
         return assets
 
     def _get_client(self):
