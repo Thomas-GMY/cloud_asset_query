@@ -330,7 +330,6 @@ class AliyunAsset(Asset):
             assets += response
             page += 1
             self._des_request.set_PageNumber(page*page_size)
-        print(assets)
         return assets
 
     def _get_client(self):
