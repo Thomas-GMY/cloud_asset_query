@@ -21,6 +21,16 @@ install_requires = [
 
     'boto3==1.26.29',
 
+    'huaweicloudsdkcore==3.1.37',
+    'huaweicloudsdkecs==3.1.37',
+    'huaweicloudsdkiam==3.1.37',
+    'huaweicloudsdkevs==3.1.37',
+    'huaweicloudsdkeip==3.1.37',
+    'huaweicloudsdknat==3.1.37',
+    'huaweicloudsdkelb==3.1.37',
+    'huaweicloudsdkobs==3.1.37',
+    'esdk-obs-python==3.22.2',
+
     'SQLAlchemy==1.4.44',
     'psycopg2==2.9.5',
     'click==8.1.3',
