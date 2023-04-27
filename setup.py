@@ -10,7 +10,8 @@ packages = [
     'asset',
     'asset.aliyun',
     'asset.tencent',
-    'asset.aws'
+    'asset.aws',
+    'asset.huawei'
 ]
 install_requires = [
     'tencentcloud-sdk-python==3.0.773',
