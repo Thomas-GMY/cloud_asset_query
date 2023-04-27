@@ -8,7 +8,7 @@ import logging
 import importlib
 
 from asset.asset_register import cloud_providers
-from asset.schema import DbConfig, TencentProfile, AliyunProfile, AwsProfile
+from asset.schema import DbConfig, TencentProfile, AliyunProfile, AwsProfile, HuaweiProfile
 from asset.ctx import FetchCtx
 
 from typing import Union
@@ -23,7 +23,7 @@ class Fetch:
     def __init__(
             self,
             cloud_provider,
-            profile: Union[TencentProfile, AliyunProfile, AwsProfile],
+            profile: Union[TencentProfile, AliyunProfile, AwsProfile, HuaweiProfile],
             assets: Union[list, str],
             regions,
             log_dir_path=_default_log_dir_path,
@@ -46,19 +46,18 @@ class Fetch:
                 asset_obj = self._register_assets[asset_name]
                 for cred in asset_obj.load_creds(self.profile):
                     for region in self.regions:
-                        asset = asset_obj(cred, region=region, dbconfig=self.dbconfig)
                         try:
-
+                            asset = asset_obj(cred, region=region, dbconfig=self.dbconfig)
                             self.logger.info(
                                 f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----start')
                             asset.fetch()
-                            self.logger.info(
-                                f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----end')
                         except Exception as e:
                             self.logger.info(
                                 f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----fail----error: {e}'
                             )
                             continue
+                        self.logger.info(
+                            f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----end')
 
     @classmethod
     def register_assets(cls, cloud_provider):

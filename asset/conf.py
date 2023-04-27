@@ -6,14 +6,15 @@
 import os
 import arrow
 from sqlalchemy import Integer, String, JSON, Date, Text, DateTime, NUMERIC, DECIMAL, FLOAT
-from asset.schema import TencentProfile, AliyunProfile, AwsProfile
+from asset.schema import TencentProfile, AliyunProfile, AwsProfile, HuaweiProfile
 
 
-PROVIDERS = ('tencent', 'aliyun', 'aws')
+PROVIDERS = ('tencent', 'aliyun', 'aws', 'huawei')
 PROVIDER_PROFILES = {
     'tencent': TencentProfile,
     'aliyun': AliyunProfile,
-    'aws': AwsProfile
+    'aws': AwsProfile,
+    'huawei': HuaweiProfile
 }
 
 today = arrow.now().datetime
@@ -96,6 +97,30 @@ REGIONS = {
         'regions': [
             'cn-northwest-1',
             'cn-north-1'
+        ]
+    },
+    'huawei': {
+        'default_region': 'cn-south-1',
+        'regions': [
+            'cn-north-1',
+            'cn-north-4',
+            'cn-south-1',
+            'cn-east-2',
+            'cn-east-3',
+            'cn-southwest-2',
+            'ap-southeast-1',
+            'ap-southeast-2',
+            'ap-southeast-3',
+            'af-south-1',
+            'sa-brazil-1',
+            'la-north-2',
+            'cn-south-4',
+            'na-mexico-1',
+            'la-south-2',
+            'cn-south-2',
+            'cn-north-9',
+            'cn-north-2',
+            'ap-southeast-4'
         ]
     }
 }

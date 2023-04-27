@@ -31,10 +31,15 @@ class AwsAssetRegister(AssetRegister):
     pass
 
 
+class HuaweiRegister(AssetRegister):
+    pass
+
+
 class CloudProviders:
     tencent = TencentAssetRegister()
     aliyun = AliyunAssetRegister()
     aws = AwsAssetRegister()
+    huawei = HuaweiRegister()
 
 
 cloud_providers = CloudProviders()

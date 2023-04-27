@@ -29,70 +29,18 @@ def asset_columns_generator(fields: dict):
 
 if __name__ == '__main__':
 
-    fields_demo =    {
-      "CreationTime": "2019-12-25T12:31:31Z",
-      "VpcId": "vpc-bp1j7w3gc1cexjqd****",
-      "Type": "Secondary",
-      "Status": "Available",
-      "NetworkInterfaceTrafficMode": "Standard",
-      "NetworkInterfaceName": "my-eni-name",
-      "MacAddress": "00:16:3e:12:**:**",
-      "QueuePairNumber": 0,
-      "NetworkInterfaceId": "eni-bp125p95hhdhn3ot****",
-      "ServiceID": 12345678910,
-      "InstanceId": "i-bp1e2l6djkndyuli****",
-      "OwnerId": "123456****",
-      "ServiceManaged": 'true',
-      "VSwitchId": "vsw-bp16usj2p27htro3****",
-      "Description": "DescriptionTest",
-      "ResourceGroupId": "rg-2ze88m67qx5z****",
-      "ZoneId": "cn-hangzhou-e",
-      "PrivateIpAddress": "172.17.**.**",
-      "QueueNumber": 8,
-      "PrivateIpSets": [
-        {
-          "PrivateIpAddress": "172.17.**.**",
-          "Primary": 'true',
-          "AssociatedPublicIp": {
-            "PublicIpAddress": "116.62.**.**",
-            "AllocationId": "null"
-          }
-        }
-      ],
-      "Ipv6Sets": [
-        {
-          "Ipv6Address": "2408:4321:180:1701:94c7:bc38:3bfa:****"
-        }
-      ],
-      "Ipv4PrefixSets": [
-        {
-          "Ipv4Prefix": "hide"
-        }
-      ],
-      "Ipv6PrefixSets": [
-        {
-          "Ipv6Prefix": "hide"
-        }
-      ],
-      "Tags": [
-        {
-          "TagValue": "TestValue",
-          "TagKey": "TestKey"
-        }
-      ],
-      "SecurityGroupIds": [
-        "sg-bp18kz60mefsicfg****"
-      ],
-      "AssociatedPublicIp": {
-        "PublicIpAddress": "116.62.**.**",
-        "AllocationId": "null"
-      },
-      "Attachment": {
-        "DeviceIndex": 0,
-        "InstanceId": "null",
-        "TrunkNetworkInterfaceId": "null",
-        "NetworkCardIndex": 0
-      }
-    }
+    fields_demo = {
+    "id" : "a253be25-ae7c-4013-978b-3c0785eccd63",
+    "router_id" : "b1d81744-5165-48b8-916e-e56626feb88f",
+    "status" : "ACTIVE",
+    "description" : "nat01",
+    "admin_state_up" : 'true',
+    "tenant_id" : "27e25061336f4af590faeabeb7fcd9a3",
+    "created_at" : "2017-11-15 14:50:39.505112",
+    "spec" : "2",
+    "internal_network_id" : "5930796a-6026-4d8b-8790-6c6bfc9f87e8",
+    "name" : "wj3",
+    "enterprise_project_id" : "0aad99bc-f5f6-4f78-8404-c598d76b0ed2"
+  }
     for asset in asset_columns_generator(fields=fields_demo):
         print(str(asset) + ',')

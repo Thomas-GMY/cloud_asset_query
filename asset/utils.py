@@ -7,16 +7,51 @@ import re
 import json
 import boto3
 import datetime
+import logging
 
 from tencentcloud.cam.v20190116 import cam_client, models
 
 from aliyunsdksts.request.v20150401 import GetCallerIdentityRequest
 from aliyunsdkcore.client import AcsClient
 
+from huaweicloudsdkcore.sdk_response import SdkResponse
+
 from boto3 import client as aws_client
 from typing import Tuple, Union
 
-from asset.schema import AwsCredential, STSAssumeRoleCredential, RamRoleArnCredential
+from asset.schema import AwsCredential, STSAssumeRoleCredential, RamRoleArnCredential, HuaweiCredential
+
+
+def retry(retry_count=5):
+    """
+    :param retry_count: 重试次数
+    :return:
+    """
+    logger = logging.getLogger('cloud-asset-fetch')
+
+    def decorator(func):
+        def handler(*args, **kwargs):
+
+            all_fail, error, response = 0, None, None
+            for i in range(retry_count):
+                try:
+                    if i > 0:
+                        logger.info(f'开始重试, 重试次数{i}')
+                    response = func(*args, **kwargs)
+                    break
+                except Exception as e:
+                    all_fail += 1
+                    error = e
+                    continue
+
+            if all_fail == retry_count:
+                logger.info('全部重试失败！')
+                raise error
+
+            return response
+
+        return handler
+    return decorator
 
 
 def to_hump_underline(string) -> str:
@@ -58,6 +93,10 @@ def aws_parser_response(
     return assets, next_token
 
 
+def huawei_parser_response(response: dict, response_filed: str) -> list:
+    return response.get(response_filed)
+
+
 def recursive_dict(_value):
     for key, value in _value.items():
         if isinstance(value, datetime.datetime):
@@ -90,6 +129,14 @@ def recursive_list(value):
     return _value_list
 
 
+def recursive_list_huawei_assets(assets: list):
+    _assets = []
+    for index in range(len(assets)):
+        _asset = assets[index]
+        if isinstance(_asset, SdkResponse):
+            _assets.append(_asset.to_json_object())
+
+
 def get_tencent_account_id(cred):
     client = cam_client.CamClient(credential=cred, region=None)
     response = client.GetUserAppId(models.GetUserAppIdRequest())
@@ -105,6 +152,31 @@ def get_aliyun_account_id(cred):
 def get_aws_account_id(cred: AwsCredential):
     response = aws_client('sts', **cred.dict()).get_caller_identity()
     return response['Account']
+
+
+def get_huawei_account_id(cred: HuaweiCredential):
+    from huaweicloudsdkcore.auth.credentials import GlobalCredentials
+    from huaweicloudsdkiam.v3.region.iam_region import IamRegion
+    from huaweicloudsdkcore.exceptions import exceptions
+    from huaweicloudsdkiam.v3.iam_client import IamClient
+    from huaweicloudsdkiam.v3.model import KeystoneListAuthDomainsRequest
+
+    credentials = GlobalCredentials(cred.ak, cred.sk)
+
+    client = IamClient.new_builder() \
+        .with_credentials(credentials) \
+        .with_region(IamRegion.value_of("cn-south-1")) \
+        .build()
+
+    try:
+        request = KeystoneListAuthDomainsRequest()
+        response = client.keystone_list_auth_domains(request).to_dict()
+        domains = response.get('domains', [])
+        if not domains:
+            raise Exception('not find domain id')
+        return domains[0].get('id')
+    except exceptions.ClientRequestException as e:
+        raise e
 
 
 def aws_assume_role(arn, role_session_name='fetch_asset', duration_seconds=3600) -> AwsCredential:

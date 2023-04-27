@@ -62,4 +62,13 @@ class AwsCredential(BaseModel):
     aws_session_token: str
 
 
+class HuaweiCredential(BaseModel):
+    ak: str
+    sk: str
+
+
+class HuaweiProfile(BaseModel):
+    credentials: List[HuaweiCredential]
+
+
 

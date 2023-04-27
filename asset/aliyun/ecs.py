@@ -11,6 +11,7 @@ from aliyunsdkecs.request.v20140526.DescribeInstancesRequest import DescribeInst
 from aliyunsdkecs.request.v20140526.DescribeEipAddressesRequest import DescribeEipAddressesRequest
 from aliyunsdkecs.request.v20140526.DescribeNatGatewaysRequest import DescribeNatGatewaysRequest
 from aliyunsdkecs.request.v20140526.DescribeNetworkInterfacesRequest import DescribeNetworkInterfacesRequest
+from aliyunsdkecs.request.v20140526.DescribeDisksRequest import DescribeDisksRequest
 
 
 asset_columns = [
@@ -157,11 +158,73 @@ network_interface_columns = [
     {'name': 'AssociatedPublicIp', 'type': 'dict'},
     {'name': 'Attachment', 'type': 'dict'}
 ]
+disk_interface_columns = [
+    {'name': 'SerialNumber', 'type': 'str'},
+    {'name': 'CreationTime', 'type': 'str'},
+    {'name': 'Status', 'type': 'str'},
+    {'name': 'Type', 'type': 'str'},
+    {'name': 'PerformanceLevel', 'type': 'str'},
+    {'name': 'BdfId', 'type': 'str'},
+    {'name': 'EnableAutoSnapshot', 'type': 'str'},
+    {'name': 'StorageSetId', 'type': 'str'},
+    {'name': 'StorageSetPartitionNumber', 'type': 'int'},
+    {'name': 'DiskId', 'type': 'str'},
+    {'name': 'DeleteAutoSnapshot', 'type': 'str'},
+    {'name': 'StorageClusterId', 'type': 'str'},
+    {'name': 'Encrypted', 'type': 'str'},
+    {'name': 'IOPSRead', 'type': 'int'},
+    {'name': 'MountInstanceNum', 'type': 'int'},
+    {'name': 'Description', 'type': 'str'},
+    {'name': 'Device', 'type': 'str'},
+    {'name': 'DiskName', 'type': 'str'},
+    {'name': 'Portable', 'type': 'str'},
+    {'name': 'ImageId', 'type': 'str'},
+    {'name': 'KMSKeyId', 'type': 'str'},
+    {'name': 'DeleteWithInstance', 'type': 'str'},
+    {'name': 'DetachedTime', 'type': 'str'},
+    {'name': 'SourceSnapshotId', 'type': 'str'},
+    {'name': 'AutoSnapshotPolicyId', 'type': 'str'},
+    {'name': 'EnableAutomatedSnapshotPolicy', 'type': 'str'},
+    {'name': 'IOPSWrite', 'type': 'int'},
+    {'name': 'InstanceId', 'type': 'str'},
+    {'name': 'IOPS', 'type': 'int'},
+    {'name': 'RegionId', 'type': 'str'},
+    {'name': 'ExpiredTime', 'type': 'str'},
+    {'name': 'Size', 'type': 'int'},
+    {'name': 'ResourceGroupId', 'type': 'str'},
+    {'name': 'DiskChargeType', 'type': 'str'},
+    {'name': 'ZoneId', 'type': 'str'},
+    {'name': 'AttachedTime', 'type': 'str'},
+    {'name': 'Category', 'type': 'str'},
+    {'name': 'ProductCode', 'type': 'str'},
+    {'name': 'MultiAttach', 'type': 'str'},
+    {'name': 'OperationLocks', 'type': 'dict'},
+    {'name': 'MountInstances', 'type': 'dict'},
+    {'name': 'Tags', 'type': 'dict'},
+    {'name': 'Attachments', 'type': 'dict'},
+    {'name': 'ProvisionedIops', 'type': 'int'},
+    {'name': 'BurstingEnabled', 'type': 'str'},
+    {'name': 'Throughput', 'type': 'int'}
+]
+nat_interface_columns = [
+    {'name': 'id', 'type': 'str'},
+    {'name': 'router_id', 'type': 'str'},
+    {'name': 'status', 'type': 'str'},
+    {'name': 'description', 'type': 'str'},
+    {'name': 'admin_state_up', 'type': 'str'},
+    {'name': 'tenant_id', 'type': 'str'},
+    {'name': 'created_at', 'type': 'str'},
+    {'name': 'spec', 'type': 'str'},
+    {'name': 'internal_network_id', 'type': 'str'},
+    {'name': 'name', 'type': 'str'},
+    {'name': 'enterprise_project_id', 'type': 'str'}
+]
 
 ecs_field_document = 'https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping'
 eip_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeEipAddresses#workbench-doc-params'
 nat_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNatGateways#workbench-doc-response'
 network_interface_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces'
+disk_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks'
 
 
 @cloud_providers.aliyun.register('ecs')
@@ -213,3 +276,17 @@ class NetworkInterface(Ecs):
     _asset_columns = [AssetColumn(**asset_column) for asset_column in network_interface_columns]
     _table_args = (UniqueConstraint('account_id', 'record_date', 'network_interface_id', name='aliyun_uc_nii'),)
     _field_document = network_interface_field_document
+
+
+@cloud_providers.aliyun.register('disk')
+class Disk(Ecs):
+    _des_request = DescribeDisksRequest
+    _response_field = 'Disks'
+    _child_response_filed = 'Disk'
+
+    _table_name = 'aliyun_disk'
+    _asset_columns = [AssetColumn(**asset_column) for asset_column in disk_interface_columns]
+    _table_args = (UniqueConstraint('account_id', 'record_date', 'disk_id', name='aliyun_uc_disk'),)
+    _field_document = disk_field_document
+
+

@@ -5,6 +5,7 @@
 
 import abc
 import copy
+import logging
 import datetime
 
 from typing import List
@@ -15,9 +16,12 @@ from boto3 import Session
 
 from asset.asset_table import AssetTable
 from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential,\
-    TencentProfile, AliyunProfile, AwsProfile
+    TencentProfile, AliyunProfile, AwsProfile, HuaweiProfile, HuaweiCredential
 from asset.utils import to_hump_underline, get_tencent_account_id, get_aliyun_account_id, get_aws_account_id, \
-    tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list, aws_assume_role
+    tencent_parser_response, aliyun_parser_response, aws_parser_response, recursive_list, aws_assume_role, \
+    get_huawei_account_id, huawei_parser_response, retry
+
+from huaweicloudsdkcore.auth.credentials import BasicCredentials
 
 
 class Describe:
@@ -44,6 +48,7 @@ class DescribeTencent(Describe):
         self.response_field = response_filed
         self.parser_response_func = parser_response
 
+    @retry(3)
     def parser_response(self):
         return self.parser_response_func(self.describe(), self.response_field)
 
@@ -66,6 +71,7 @@ class DescribeAliyun(Describe):
         self.child_response_filed = child_response_filed
         self.parser_response_func = parser_response_func
 
+    @retry(5)
     def parser_response(self):
         return self.parser_response_func(self.describe(), self.response_filed, self.child_response_filed)
 
@@ -90,6 +96,7 @@ class DescribeAws(Describe):
         self.child_response_filed = child_response_filed
         self.parser_response_func = parser_response_func
 
+    @retry(3)
     def parser_response(self):
         return self.parser_response_func(self.describe(), self.response_field, self.child_response_filed)
 
@@ -97,7 +104,33 @@ class DescribeAws(Describe):
         return getattr(self.client, self.des_request)(**self.des_request_kwargs)
 
 
+class DescribeHuawei(Describe):
+
+    def __init__(
+            self,
+            client: object,
+            des: str,
+            des_request: object,
+            response_field: str,
+            parser_response_func: callable = huawei_parser_response
+    ):
+        self.client = client
+        self.des = des
+        self.des_request = des_request
+        self.response_field = response_field
+        self.parser_response_func = parser_response_func
+
+    @retry(3)
+    def parser_response(self):
+        return self.parser_response_func(self.describe(), self.response_field)
+
+    def describe(self):
+        return getattr(self.client, self.des)(self.des_request).to_json_object()
+
+
 class Asset(metaclass=abc.ABCMeta):
+    logger = logging.getLogger('cloud-asset-fetch')
+
     _platform: str = ''
 
     _table_name: str = None
@@ -415,3 +448,68 @@ class AwsAsset(Asset):
     def load_creds(cls, profile: AwsProfile) -> List[AwsCredential]:
         for role in profile.roles:
             yield aws_assume_role(role.arn, role_session_name=role.session_name, duration_seconds=role.duration_seconds)
+
+
+class HuaweiAsset(Asset):
+    _platform = 'huawei'
+
+    _client = None
+    _region_obj = None
+    _describe = DescribeHuawei
+    _des: str = ''
+    _request_obj = None
+    _request_pars: dict = {'limit': 50, 'offset': 1}
+    _response_field = ''
+    _offset = True
+
+    def __init__(
+            self,
+            cred: HuaweiCredential,
+            region=None, dbconfig: DbConfig = None,
+            parser_response=huawei_parser_response
+    ):
+        super(HuaweiAsset, self).__init__(cred, region=region, dbconfig=dbconfig, parser_response=parser_response)
+
+    @property
+    def credential(self):
+        return BasicCredentials(self.cred.ak, self.cred.sk)
+
+    def _paginate_all_assets(self) -> list:
+        assets = []
+        _des_request_kwargs = self._request_obj(**self._request_pars)
+        while True:
+            response = self._describe(
+                self.client,
+                self._des,
+                _des_request_kwargs,
+                self._response_field,
+                self.parser_response
+            ).parser_response()
+            assets += response
+
+            if not response:
+                break
+            if self._offset:
+                _des_request_kwargs.offset += 1
+            else:
+                if len(response) < _des_request_kwargs.limit:
+                    break
+
+        return assets
+
+    def _get_assets(self) -> list:
+        pass
+
+    def _get_account_id(self):
+        return get_huawei_account_id(self.credential)
+
+    def _get_client(self):
+        region = self._region_obj.value_of(self.region)
+        return getattr(
+            getattr(self._client.new_builder(), 'with_credentials')(self.credential),
+            'with_region'
+        )(region).build()
+
+    @classmethod
+    def load_creds(cls, profile: HuaweiProfile) -> List[HuaweiCredential]:
+        return profile.credentials

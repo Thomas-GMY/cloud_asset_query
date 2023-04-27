@@ -49,7 +49,7 @@ def fetch(cloud_provider, profile_path, assets, regions=None, log_dir_path='./')
     if cloud_providers is None:
         raise BaseCloudAssetException('cloud_providers not be None')
     cloud_provider_profile = filter(lambda x: x['cloud_provider'] == cloud_provider, cloud_providers).__next__()
-
+    cloud_provider_profile.setdefault('regions', None)
     _regions = cloud_provider_profile.pop('regions')
     if regions is None:
         regions = _regions if _regions else REGIONS[cloud_provider]['default_region'].split(',')
