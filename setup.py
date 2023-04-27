@@ -28,7 +28,6 @@ install_requires = [
     'huaweicloudsdkeip==3.1.37',
     'huaweicloudsdknat==3.1.37',
     'huaweicloudsdkelb==3.1.37',
-    'huaweicloudsdkobs==3.1.37',
     'esdk-obs-python==3.22.2',
 
     'SQLAlchemy==1.4.44',
