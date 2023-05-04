@@ -29,18 +29,24 @@ def asset_columns_generator(fields: dict):
 
 if __name__ == '__main__':
 
-    fields_demo = {
-    "id" : "a253be25-ae7c-4013-978b-3c0785eccd63",
-    "router_id" : "b1d81744-5165-48b8-916e-e56626feb88f",
-    "status" : "ACTIVE",
-    "description" : "nat01",
-    "admin_state_up" : 'true',
-    "tenant_id" : "27e25061336f4af590faeabeb7fcd9a3",
-    "created_at" : "2017-11-15 14:50:39.505112",
-    "spec" : "2",
-    "internal_network_id" : "5930796a-6026-4d8b-8790-6c6bfc9f87e8",
-    "name" : "wj3",
-    "enterprise_project_id" : "0aad99bc-f5f6-4f78-8404-c598d76b0ed2"
-  }
+    fields_demo =     {
+      "SecurityGroupId": "sg-bp67acfmxazb4p****",
+      "SecurityGroupName": "SGTestName",
+      "Description": "TestDescription",
+      "SecurityGroupType": "normal",
+      "VpcId": "vpc-bp67acfmxazb4p****",
+      "CreationTime": "2021-08-31T03:12:29Z",
+      "EcsCount": 0,
+      "AvailableInstanceAmount": 0,
+      "ResourceGroupId": "rg-bp67acfmxazb4p****",
+      "ServiceManaged": 'true',
+      "ServiceID": 12345678910,
+      "Tags": [
+        {
+          "TagValue": "TestValue",
+          "TagKey": "TestKey"
+        }
+      ]
+    }
     for asset in asset_columns_generator(fields=fields_demo):
         print(str(asset) + ',')

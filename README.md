@@ -59,6 +59,7 @@
 | 资产                 | 描述          | 字段文档                                                                                                                             |
 |--------------------|-------------|--------------------------------------------------------|
 | cvm                | cvm(虚机)     | [go](https://cloud.tencent.com/document/api/213/15728)|
+| security_groups    | 安全组         | [go](https://cloud.tencent.com/document/api/215/15808)|
 | cvm_cpu_usage      | 虚机cpu利用率    | [go](https://cloud.tencent.com/document/api/248/31014)|
 | vpcs               | vpc         | [go](https://cloud.tencent.com/document/api/215/15778)|
 | subnets            | subnets(子网) | [go](https://cloud.tencent.com/document/api/215/15784)|
@@ -79,6 +80,7 @@
 | 资产                | 描述               | 字段文档                                                                                                                             |
 |-------------------|------------------|--------------------------------------------------------|
 | ecs               | ecs(虚机)          | [go](https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping)|
+| security_groups   | 安全组       | [go](https://support.huaweicloud.com/api-vpc/vpc_sg01_0003.html)|
 | eip               | 弹性公网ip           | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeEipAddresses#workbench-doc-params)|
 | nat_gateway       | NatGateway       | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNatGateways#workbench-doc-response)|
 | network_interface | NetworkInterface | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces)|
@@ -90,9 +92,10 @@
 
     cloud-asset fetch --cloud-provider huawei --profile-path xxx.yaml --assets ecs
 ##### 支持的云资产列表
-| 资产  | 描述           | 字段文档                                                                                                                             |
-|-----|--------------|--------------------------------------------------------|
-| ecs | ecs(虚机)      | [go](https://support.huaweicloud.com/api-ecs/ecs_05_0002.html)|
-| evs | 磁盘           | [go](https://support.huaweicloud.com/api-evs/evs_04_2006.html)|
-| eip | 弹性ip         | [go](https://support.huaweicloud.com/api-eip/eip_api_0002.html)|
-| nat | NatGateway   | [go](https://support.huaweicloud.com/api-natgateway/ListNatGateways.html)|
+| 资产  | 描述     | 字段文档                                                                                                                             |
+|-----|--------|--------------------------------------------------------|
+| ecs | ecs(虚机) | [go](https://support.huaweicloud.com/api-ecs/ecs_05_0002.html)|
+| evs | 磁盘     | [go](https://support.huaweicloud.com/api-evs/evs_04_2006.html)|
+| eip | 弹性ip   | [go](https://support.huaweicloud.com/api-eip/eip_api_0002.html)|
+| nat | NatGateway | [go](https://support.huaweicloud.com/api-natgateway/ListNatGateways.html)|
+| security_groups  | 安全组    | [go](https://support.huaweicloud.com/api-vpc/vpc_sg01_0003.html)|

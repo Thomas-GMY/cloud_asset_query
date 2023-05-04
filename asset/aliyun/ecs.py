@@ -12,6 +12,8 @@ from aliyunsdkecs.request.v20140526.DescribeEipAddressesRequest import DescribeE
 from aliyunsdkecs.request.v20140526.DescribeNatGatewaysRequest import DescribeNatGatewaysRequest
 from aliyunsdkecs.request.v20140526.DescribeNetworkInterfacesRequest import DescribeNetworkInterfacesRequest
 from aliyunsdkecs.request.v20140526.DescribeDisksRequest import DescribeDisksRequest
+from aliyunsdkecs.request.v20140526.DescribeSecurityGroupsRequest import DescribeSecurityGroupsRequest
+from aliyunsdkecs.request.v20140526.DescribeSecurityGroupAttributeRequest import DescribeSecurityGroupAttributeRequest
 
 
 asset_columns = [
@@ -219,12 +221,28 @@ nat_interface_columns = [
     {'name': 'name', 'type': 'str'},
     {'name': 'enterprise_project_id', 'type': 'str'}
 ]
+sg_interface_columns = [
+    {'name': 'SecurityGroupId', 'type': 'str'},
+    {'name': 'SecurityGroupName', 'type': 'str'},
+    {'name': 'Description', 'type': 'str'},
+    {'name': 'SecurityGroupType', 'type': 'str'},
+    {'name': 'VpcId', 'type': 'str'},
+    {'name': 'CreationTime', 'type': 'str'},
+    {'name': 'EcsCount', 'type': 'int'},
+    {'name': 'AvailableInstanceAmount', 'type': 'int'},
+    {'name': 'ResourceGroupId', 'type': 'str'},
+    {'name': 'ServiceManaged', 'type': 'str'},
+    {'name': 'ServiceID', 'type': 'str'},
+    {'name': 'Tags', 'type': 'dict'},
+    {'name': 'Permissions', 'type': 'dict'}
+]
 
 ecs_field_document = 'https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping'
 eip_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeEipAddresses#workbench-doc-params'
 nat_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNatGateways#workbench-doc-response'
 network_interface_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces'
 disk_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks'
+sg_field_document = 'https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeSecurityGroups'
 
 
 @cloud_providers.aliyun.register('ecs')
@@ -289,4 +307,34 @@ class Disk(Ecs):
     _table_args = (UniqueConstraint('account_id', 'record_date', 'disk_id', name='aliyun_uc_disk'),)
     _field_document = disk_field_document
 
+
+@cloud_providers.aliyun.register('security_groups')
+class Sg(Ecs):
+    _des_request = DescribeSecurityGroupsRequest
+    _response_field = 'SecurityGroups'
+    _child_response_filed = 'SecurityGroup'
+
+    _table_name = 'aliyun_sg'
+    _asset_columns = [AssetColumn(**asset_column) for asset_column in sg_interface_columns]
+    _table_args = (UniqueConstraint('account_id', 'record_date', 'security_group_id', name='aliyun_uc_sg'),)
+    _field_document = sg_field_document
+
+    def _paginate_all_assets(self):
+        assets = super(Sg, self)._paginate_all_assets()
+        for asset in assets:
+            sg_id = asset['SecurityGroupId']
+            request = DescribeSecurityGroupAttributeRequest()
+            request.set_query_params({'SecurityGroupId': sg_id, 'RegionId': self.region})
+            response = self._describe(
+                self.client,
+                request,
+                'Permissions',
+                'Permission',
+                self.parser_response
+            ).parser_response()
+            if not response:
+                continue
+            asset['Permissions'] = response
+
+        return assets
 

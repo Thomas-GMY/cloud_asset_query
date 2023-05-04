@@ -29,6 +29,7 @@ install_requires = [
     'huaweicloudsdkeip==3.1.37',
     'huaweicloudsdknat==3.1.37',
     'huaweicloudsdkelb==3.1.37',
+    'huaweicloudsdkvpc==3.1.37',
     'esdk-obs-python==3.22.2',
 
     'SQLAlchemy==1.4.44',
@@ -42,7 +43,7 @@ install_requires = [
 entry_points = {'console_scripts': ['cloud-asset = asset.cli:main']}
 setup_kwargs = {
     'name': 'cloud-asset',
-    'version': '0.0.4.1',
+    'version': '0.0.4.3',
     'description': 'Cloud Asset - Asset For Postgres',
     'license': 'Apache-2.0',
     'long_description': '',

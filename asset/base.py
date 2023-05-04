@@ -492,7 +492,10 @@ class HuaweiAsset(Asset):
             if self._offset:
                 _des_request_kwargs.offset += 1
             else:
-                if len(response) < _des_request_kwargs.limit:
+                if _des_request_kwargs.limit:
+                    if len(response) < _des_request_kwargs.limit:
+                        break
+                else:
                     break
 
         return assets
