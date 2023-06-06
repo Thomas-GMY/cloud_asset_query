@@ -46,6 +46,8 @@
 | elb_v2_listeners           | 新版本的elb监听器                  | [go](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_listeners)|                                                                                                                             |                                                                                                                                 |
 | elb_v2_target_groups       | 新版本的elb目标组                  | [go](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_target_groups)|                                                                                                                             |                                                                                                                                 |
 | elb_v2_target_group_health | 新版本的elb目标组后的状态(查看后面挂的资源)    | [go](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_target_health)|                                                                                                                             |                                                                                                                                 |
+| contact_information        | account.contact_information | [go](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/account/client/get_contact_information.html)|                                                                                                                             |                                                                                                                                 |
+| alternate_contact          | account.alternate_contact   | [go](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/account/client/get_alternate_contact.html)|                                                                                                                             |                                                                                                                                 |
 
 ----
 
@@ -70,6 +72,8 @@
 | cdb_mysql          | cdb（Mysql）  | [go](https://cloud.tencent.com/document/api/236/15872#1.-.E6.8E.A5.E5.8F.A3.E6.8F.8F.E8.BF.B0)|
 | cos                | cos（对象存储）   | [go](https://cloud.tencent.com/document/api/236/15872#1.-.E6.8E.A5.E5.8F.A3.E6.8F.8F.E8.BF.B0)|
 | clb                | 负载均衡        | [go](https://cloud.tencent.com/document/api/214/30685)|
+| user               | cam.user    | [go](https://cloud.tencent.com/document/api/598/34587)|
+| user_ak            | cam.user.ak | [go](https://cloud.tencent.com/document/api/598/45156)|
 
 
 ### 阿里云
@@ -77,14 +81,15 @@
 
     cloud-asset fetch --cloud-provider aliyun --profile-path xxx.yaml --assets ecs
 ##### 支持的云资产列表
-| 资产                | 描述               | 字段文档                                                                                                                             |
-|-------------------|------------------|--------------------------------------------------------|
-| ecs               | ecs(虚机)          | [go](https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping)|
-| security_groups   | 安全组       | [go](https://support.huaweicloud.com/api-vpc/vpc_sg01_0003.html)|
-| eip               | 弹性公网ip           | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeEipAddresses#workbench-doc-params)|
-| nat_gateway       | NatGateway       | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNatGateways#workbench-doc-response)|
-| network_interface | NetworkInterface | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces)|
-| disk              | 磁盘               | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks)|
+| 资产                | 描述                                        | 字段文档                                                                                                                             |
+|-------------------|-------------------------------------------|--------------------------------------------------------|
+| ecs               | ecs(虚机)                                   | [go](https://help.aliyun.com/document_detail/25506.html?spm=a2c4g.11186623.0.0.3ac56cf0qyfOQ7#resultMapping)|
+| security_groups   | 安全组                                       | [go](https://support.huaweicloud.com/api-vpc/vpc_sg01_0003.html)|
+| eip               | 弹性公网ip                                    | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeEipAddresses#workbench-doc-params)|
+| nat_gateway       | NatGateway                                | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNatGateways#workbench-doc-response)|
+| network_interface | NetworkInterface                          | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces)|
+| disk              | 磁盘                                        | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks)|
+| user              | ram.user(include ak and user detail info) | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks)|
 
 
 ### 华为云
