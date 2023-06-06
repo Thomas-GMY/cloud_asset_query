@@ -57,6 +57,8 @@ def fetch(cloud_provider, profile_path, assets, regions=None, log_dir_path='./')
         cloud_regions = REGIONS[cloud_provider]['regions']
         if regions == 'all':
             regions = cloud_regions
+        elif regions == 'none':
+            regions = cloud_regions[0: 1]
         else:
             regions = set(regions.split(','))
             diff_regions = regions.difference(cloud_regions)

@@ -22,6 +22,9 @@ from typing import Tuple, Union
 from asset.schema import AwsCredential, STSAssumeRoleCredential, RamRoleArnCredential, HuaweiCredential
 
 
+_IGNORE_ERROR_MSG = 'EntityNotExist.User.LoginProfile login policy not exists'
+
+
 def retry(retry_count=5):
     """
     :param retry_count: 重试次数
@@ -40,6 +43,10 @@ def retry(retry_count=5):
                     response = func(*args, **kwargs)
                     break
                 except Exception as e:
+                    if _IGNORE_ERROR_MSG in str(e):
+                        response = None
+                        break
+
                     all_fail += 1
                     error = e
                     continue
@@ -90,6 +97,10 @@ def aws_parser_response(
             return assets.get(child_response_filed), next_token
         else:
             raise Exception('')
+
+    if isinstance(assets, dict):
+        assets = [assets]
+
     return assets, next_token
 
 

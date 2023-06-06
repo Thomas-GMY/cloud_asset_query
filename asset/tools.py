@@ -29,24 +29,19 @@ def asset_columns_generator(fields: dict):
 
 if __name__ == '__main__':
 
-    fields_demo =     {
-      "SecurityGroupId": "sg-bp67acfmxazb4p****",
-      "SecurityGroupName": "SGTestName",
-      "Description": "TestDescription",
-      "SecurityGroupType": "normal",
-      "VpcId": "vpc-bp67acfmxazb4p****",
-      "CreationTime": "2021-08-31T03:12:29Z",
-      "EcsCount": 0,
-      "AvailableInstanceAmount": 0,
-      "ResourceGroupId": "rg-bp67acfmxazb4p****",
-      "ServiceManaged": 'true',
-      "ServiceID": 12345678910,
-      "Tags": [
-        {
-          "TagValue": "TestValue",
-          "TagKey": "TestKey"
-        }
-      ]
+    fields_demo =  {
+        'AddressLine1': 'string',
+        'AddressLine2': 'string',
+        'AddressLine3': 'string',
+        'City': 'string',
+        'CompanyName': 'string',
+        'CountryCode': 'string',
+        'DistrictOrCounty': 'string',
+        'FullName': 'string',
+        'PhoneNumber': 'string',
+        'PostalCode': 'string',
+        'StateOrRegion': 'string',
+        'WebsiteUrl': 'string'
     }
     for asset in asset_columns_generator(fields=fields_demo):
         print(str(asset) + ',')

@@ -13,6 +13,7 @@ from typing import List
 from sqlalchemy import create_engine, Table, UniqueConstraint
 
 from boto3 import Session
+from aliyunsdkcore.client import AcsClient
 
 from asset.asset_table import AssetTable
 from asset.schema import DbConfig, AssetColumn, STSAssumeRoleCredential, RamRoleArnCredential, AwsCredential,\
@@ -259,6 +260,7 @@ class TencentAsset(Asset):
     _des_request: object = None
     _response_field: str = ''
 
+    _paginate: bool = True
     _paginate_type = 'int'  # int or str
 
     def __init__(
@@ -278,7 +280,8 @@ class TencentAsset(Asset):
     def _paginate_all_assets(self):
         page, assets = 0, []
         _des_request = copy.deepcopy(self._des_request)
-        _des_request.Limit = 50 if self._paginate_type == 'int' else '50'
+        if self._paginate:
+            _des_request.Limit = 50 if self._paginate_type == 'int' else '50'
 
         while True:
             response = self._describe(
@@ -287,11 +290,16 @@ class TencentAsset(Asset):
                 break
 
             assets += response
+
             page = 1
-            if isinstance(_des_request.Limit, str):
-                _des_request.Offset = str(page * int(_des_request.Limit))
+            if self._paginate:
+                if isinstance(_des_request.Limit, str):
+                    _des_request.Offset = str(page * int(_des_request.Limit))
+                else:
+                    _des_request.Offset = page * _des_request.Limit
             else:
-                _des_request.Offset = page * _des_request.Limit
+                break
+
         return assets
 
     def _get_client(self):
@@ -322,6 +330,8 @@ class AliyunAsset(Asset):
 
     _describe = DescribeAliyun
 
+    _paginate = True
+
     def __init__(
             self,
             cred: RamRoleArnCredential,
@@ -348,7 +358,8 @@ class AliyunAsset(Asset):
 
     def _paginate_all_assets(self):
         page, page_size, assets = 0, 50, []
-        self._des_request.set_PageSize(page_size)
+        if self._paginate:
+            self._des_request.set_PageSize(page_size)
         while True:
             response = self._describe(
                 self.client,
@@ -362,12 +373,15 @@ class AliyunAsset(Asset):
 
             assets += response
             page += 1
-            self._des_request.set_PageNumber(page*page_size)
+            if self._paginate:
+                self._des_request.set_PageNumber(page*page_size)
+            else:
+                break
+
         return assets
 
     def _get_client(self):
-        """由子类实现"""
-        pass
+        return AcsClient(credential=self.cred, region_id=self.region)
 
     def _get_assets(self):
         return self.asset_describe.parser_response()
