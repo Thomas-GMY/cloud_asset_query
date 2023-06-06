@@ -19,7 +19,7 @@ install_requires = [
     'aliyun-python-sdk-core==2.13.36',
     'aliyun-python-sdk-ecs==4.24.26',
     'aliyun-python-sdk-sts==3.1.0',
-    'aliyun-python-sdk-ram=3.3.0',
+    'aliyun-python-sdk-ram==3.3.0',
 
     'boto3==1.26.29',
 
