@@ -67,7 +67,7 @@ class Elb(AwsAsset):
                 'TagDescriptions',
                 des_request_kwargs={'LoadBalancerNames': [elb['LoadBalancerName'] for elb in elb_list]},
                 parser_response_func=self.parser_response
-            )
+            ).parser_response()
             tags += _tags
         if tags:
             for asset in _assets:

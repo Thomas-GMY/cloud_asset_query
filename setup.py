@@ -44,7 +44,7 @@ install_requires = [
 entry_points = {'console_scripts': ['cloud-asset = asset.cli:main']}
 setup_kwargs = {
     'name': 'cloud-asset',
-    'version': '0.0.4.7',
+    'version': '0.0.4.9',
     'description': 'Cloud Asset - Asset For Postgres',
     'license': 'Apache-2.0',
     'long_description': '',

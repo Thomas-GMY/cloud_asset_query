@@ -20,8 +20,9 @@ db_config = DbConfig(
 
 
 class BaseAwsTest:
-    arn = os.getenv('AWS_ARN')
-    region = 'cn-northwest-1'
+    # arn = os.getenv('AWS_ARN')
+    arn = 'arn:aws-cn:iam::301279899543:role/ReadOnlyByProgram'
+    region = 'cn-north-1'
     # cred = aws_assume_role(arn=arn)
     db_config = db_config
 
