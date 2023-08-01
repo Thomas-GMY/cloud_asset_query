@@ -59,7 +59,7 @@ class Elb(AwsAsset):
         for index in range(len(_assets) // 20 + 1):
             """get tags"""
             elb_list = _assets[index: 20: index * 20 + 20]
-            if elb_list:
+            if not elb_list:
                 break
             _tags, _ = self._describe(
                 self.client,

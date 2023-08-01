@@ -12,6 +12,7 @@ from asset.schema import DbConfig, TencentProfile, AliyunProfile, AwsProfile, Hu
 from asset.ctx import FetchCtx
 
 from typing import Union
+from logging.handlers import TimedRotatingFileHandler
 
 
 _default_log_dir_path = './'
@@ -68,14 +69,16 @@ class Fetch:
         dir_path = os.path.join(self.log_dir_path, 'fetch_log')
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
-        handler = logging.FileHandler(os.path.join(dir_path, 'fetch.log'))
-        handler.setLevel(logging.INFO)
-        handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s:%(levelname)s:%(message)s"))
+        file_handler = TimedRotatingFileHandler(
+            filename=os.path.join(dir_path, 'fetch.log'), when="MIDNIGHT", interval=1, backupCount=7, encoding='utf-8'
+        )
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(logging.Formatter("%(asctime)s: %(name)s:%(levelname)s:%(message)s"))
 
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
 
-        self.logger.addHandler(handler)
+        self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
         self.logger.setLevel(logging.INFO)
 

@@ -26,8 +26,22 @@ user_ak_asset_columns = [
     {'name': 'CreateTime', 'type': 'str'},
     {'name': 'LastUse', 'type': 'dict'},
 ]
+role_columns = [
+    {'name': 'AddTime', 'type': 'str'},
+    {'name': 'ConsoleLogin', 'type': 'int'},
+    {'name': 'DeletionTaskId', 'type': 'str'},
+    {'name': 'Description', 'type': 'str'},
+    {'name': 'PolicyDocument', 'type': 'str'},
+    {'name': 'RoleId', 'type': 'str'},
+    {'name': 'RoleName', 'type': 'str'},
+    {'name': 'RoleType', 'type': 'str'},
+    {'name': 'SessionDuration', 'type': 'int'},
+    {'name': 'Tags', 'type': 'dict'},
+    {'name': 'UpdateTime', 'type': 'str'}
+]
 user_asset_document = 'https://cloud.tencent.com/document/api/598/34587'
 user_ak_asset_document = 'https://cloud.tencent.com/document/api/598/45156'
+role_asset_document = 'https://cloud.tencent.com/document/api/598/36223'
 
 
 
@@ -88,5 +102,10 @@ class UserAk(User):
             asset['LastUse'] = list(filter(lambda x: x['SecretId'] == asset['AccessKeyId'], response))
 
         return assets
+
+
+# @cloud_providers.tencent.register('role')
+# class Role(TencentAsset):
+#     pass
 
 

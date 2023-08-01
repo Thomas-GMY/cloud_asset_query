@@ -460,8 +460,16 @@ class AwsAsset(Asset):
 
     @classmethod
     def load_creds(cls, profile: AwsProfile) -> List[AwsCredential]:
+        creds = []
         for role in profile.roles:
-            yield aws_assume_role(role.arn, role_session_name=role.session_name, duration_seconds=role.duration_seconds)
+            try:
+                creds.append(
+                    aws_assume_role(role.arn, role_session_name=role.session_name, duration_seconds=role.duration_seconds)
+                )
+            except Exception as e:
+                cls.logger.error(f'aws_assume_role fail, error: {e} ')
+                continue
+        return creds
 
 
 class HuaweiAsset(Asset):
