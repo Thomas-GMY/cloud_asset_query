@@ -53,8 +53,9 @@ class Fetch:
                                 f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----start')
                             asset.fetch()
                         except Exception as e:
+                            import traceback
                             self.logger.info(
-                                f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----fail----error: {e}'
+                                f'asset: {asset_name} ----region: {region} ----account_id: {asset.account_id}----fail----error: {traceback.format_exc()}'
                             )
                             continue
                         self.logger.info(
