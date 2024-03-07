@@ -5,6 +5,8 @@ aliyun-python-sdk-core==2.13.36
 aliyun-python-sdk-ecs==4.24.26
 aliyun-python-sdk-sts==3.1.0
 aliyun-python-sdk-ram==3.3.0
+alibabacloud-credentials==0.3.2
+oss2==2.18.4
 
 boto3==1.26.29
 

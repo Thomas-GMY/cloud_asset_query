@@ -135,3 +135,4 @@ config.yml
 /fetch_log
 *.xml
 *.iml
+.vscode
