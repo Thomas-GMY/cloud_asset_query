@@ -90,6 +90,7 @@
 | network_interface | NetworkInterface                          | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeNetworkInterfaces)|
 | disk              | 磁盘                                        | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks)|
 | user              | ram.user(include ak and user detail info) | [go](https://next.api.aliyun.com/document/Ecs/2014-05-26/DescribeDisks)|
+| oss|对象存储|[go](https://help.aliyun.com/zh/oss/developer-reference/list-buckets-1?spm=a2c4g.11186623.0.0.3173648dxGwt7u)|
 
 
 ### 华为云
