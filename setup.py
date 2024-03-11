@@ -20,6 +20,8 @@ install_requires = [
     'aliyun-python-sdk-ecs==4.24.26',
     'aliyun-python-sdk-sts==3.1.0',
     'aliyun-python-sdk-ram==3.3.0',
+    "alibabacloud-credentials==0.3.2",
+    "oss2==2.18.4",
 
     'boto3==1.26.29',
 
@@ -44,7 +46,7 @@ install_requires = [
 entry_points = {'console_scripts': ['cloud-asset = asset.cli:main']}
 setup_kwargs = {
     'name': 'cloud-asset',
-    'version': '0.0.5.0',
+    'version': '0.0.5.1',
     'description': 'Cloud Asset - Asset For Postgres',
     'license': 'Apache-2.0',
     'long_description': '',
